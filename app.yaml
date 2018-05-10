@@ -1,0 +1,25 @@
+runtime: php55
+api_version: 1
+threadsafe: false
+
+handlers:
+- url: /stylesheets
+  static_dir: stylesheets
+
+- url: /scripts
+  static_dir: scripts
+
+- url: /images
+  static_dir: images
+
+- url: /twigs
+  static_dir: twigs
+  application_readable : true
+
+- url: /.*
+  script: index.php
+
+env_variables:
+  MYSQL_DSN: mysql:unix_socket=/cloudsql/anwesenheitstrackermvp:europe-west4:anwesenheit;dbname=anwesenheit
+  MYSQL_USER: test-user
+  MYSQL_PASSWORD: test

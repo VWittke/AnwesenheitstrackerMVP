@@ -1,0 +1,15 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+
+<div class="loginform">
+	<form id="profloginForm" action="/prof" method="post">
+		<label for="login">Login:</label>
+		<input name="login" type="text" maxlength="60"/>
+		<label for="passwort">Passwort:</label>
+		<input name="passwort" type="password" maxlength="60"/>
+		<input type="submit" value="Einloggen" class="submit waves-effect waves-light btn" />
+	</form>
+</div>
+
+{% endblock %}

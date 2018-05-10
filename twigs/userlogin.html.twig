@@ -1,0 +1,14 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+
+<div class="loginform">
+	<form id="userloginForm" action="/" method="post">
+		<label for="veranstaltung">Tragen Sie den Code der Veranstaltung hier ein:</label>
+		<input name="veranstaltung" type="text" maxlength="6"/>
+		<input type="submit" value="Anzeigen" class="submit waves-effect waves-light btn" />
+	</form>
+</div>
+<a href="/prof" class="waves-effect waves-light btn">Professor Login</a>
+
+{% endblock %}

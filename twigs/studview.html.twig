@@ -1,0 +1,47 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+
+
+<div id="displayArea" class="container row">
+	<div id="TopBar">
+	<div class="col s4">{{info["vname"]}}</div>
+	<div class="col s2">{{info["name"]}}</div>
+	<div class="col s2">{{info["datum"]}}</div>
+	<div class="col s2">{{info["startzeit"]}} - {{info["endzeit"]}}</div>
+	<a href="#modal2" class= "col s2 waves-effect waves-light btn modal-trigger">Eintragen</a>
+	</div>
+	
+	{% if anwesende %}
+	{% for row in anwesende %}
+	<div>
+		<div class="Eintragung col s12">
+		<div class="col s3">{{row.matrikelnummer}}</div>
+		<div class="col s3">{{row.name}}</div>
+		<div class="col s3">{{row[2]}}</div>
+		<div class="col s2">{{row[3]}}</div>
+		{% if candelete %}
+		<form id="deleteForm" action="/deletestud/{{id}}" method="post">
+			<input name="anwid" type="hidden" value="{{ row.idanwesenheit }}"/>
+			<input type="submit" value="X" class="submit waves-effect waves-light btn" />
+		</form>
+		{% endif %}
+		</div>
+	{% endfor %}
+	{% endif %}
+</div>
+<div id="modal2" class="modal no-autoinit">
+	<div class="modal-content" id="modal-content">
+		<h4 id="modalHeader">Tragen Sie sich für die Veranstaltung ein</h4>
+		<div id="formcontainer">
+			<form id="addForm" action="/{{id}}" method="post">
+				<label class="shortinput" for="MNr">Matrikelnummer:</label>
+				<label class="shortinput" for="StudName">Name (optional):</label>
+				<input class="shortinput" id="MNr" name="MNr" type="text" maxlength="10" value="{{matnr}}"/>
+				<input class="shortinput"id="StudName" name="StudName" type="text" maxlength="60"/>
+				<input type="submit" value="Eintragen" class="submit waves-effect waves-light btn" />
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock %}

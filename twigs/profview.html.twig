@@ -1,0 +1,47 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+<div id="displayArea" class="container row">
+	<div id="TopBar">
+	<div class="col s6">Veranstaltungen von {{name[0]}}</div>
+	<a href="#modal1" class= "col s3 waves-effect waves-light btn modal-trigger">Hinzufügen</a>
+	<a href="/prof/logout" class= "col s3 waves-effect waves-light btn">Logout</a>
+	</div>
+	{% if veranstaltungen %}
+	{% for row in veranstaltungen %}
+	<div>
+		<div class="Veranstaltung col s12">
+		<div class="col s3">{{row.idveranstaltung}} - {{ row.vname }}</div>
+		<div class="col s2">{{ row.datum }}</div>
+		<div class="col s2">{{ row.startzeit }} - {{ row.endzeit }}</div>
+		<a href="/{{row.idveranstaltung}}" class= "col s2 waves-effect waves-light btn">Anzeigen</a>
+		<a href="/changeveranstaltung/{{row.idveranstaltung}}" class= "col s2 waves-effect waves-light btn">Ändern</a>
+		<form id="deleteForm" action="/deleteveranstaltung/{{id}}" method="post">
+			<input name="vid" type="hidden" value="{{row.idveranstaltung}}"/>
+			<input type="submit" value="X" class="submit waves-effect waves-light btn col s1" />
+		</form>
+		</div>
+	</div>
+	{% endfor %}
+	{% endif %}
+</div>
+<div id="modal1" class="modal no-autoinit">
+	<div class="modal-content" id="modal-content">
+		<h4 id="modalHeader">Legen Sie eine neue Veranstaltung an</h4>
+		<div id="formcontainer">
+			<form id="addForm" action="/prof/{{id}}" method="post">
+				<label for="VName">Name der Veranstaltung:</label>
+				<input id="VName" name="VName" type="text" maxlength="60"/>
+				<label class="shortinput" for="VDatum">Datum der Veranstaltung:</label>
+				<label class="shorterinput" for="VStart">Startzeit:</label>
+				<label class="shorterinput" for="VEnde">Endzeit:</label>
+				<input class="shortinput" id="VDatum" name="VDatum" type="text" maxlength="10"/>
+				<input class="shorterinput"id="VStart" name="VStart" type="text" maxlength="8"/>
+				<input class="shorterinput"id="VEnde" name="VEnde" type="text" maxlength="8"/>
+				<input type="submit" value="Anlegen" class="submit waves-effect waves-light btn" />
+			</form>
+		</div>
+	</div>
+</div>
+
+{% endblock %}
