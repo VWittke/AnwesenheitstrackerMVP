@@ -107,6 +107,7 @@ main {
 .Eintragung i {
 	height: 23px;
 	line-height: 23px;
+	padding: 0 !important;
 }
 
 .Eintragung input {
@@ -123,4 +124,49 @@ main {
 #addForm .shorterinput {
 	width: 25%;
 	display: inline-block;
+}
+
+.tdelete input{
+	color: white;
+}
+
+.buttontable {
+	padding: 0 ! important;
+}
+
+i {
+	padding: 0 !important;
+}
+
+i input {
+	height: 100% !important;
+	width: 100% !important;
+}
+
+#message{
+	text-align: center;
+}
+
+#wayback {
+	position: fixed;
+}
+
+#tablehead .sideways {
+	writing-mode: vertical-lr;
+	text-align: center;
+	height: 100px;
+	padding-top: 5px;
+	margin-top: 15px;
+}
+
+.veranstaltungtable th:nth-child(2n) {
+	background: #CCC;
+}
+
+.veranstaltungtable td:nth-child(2n) {
+	background: #CCC;
+}
+
+.present {
+	text-align: center !important;
 }

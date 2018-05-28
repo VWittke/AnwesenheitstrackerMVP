@@ -1,0 +1,14 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+<form id="changeForm" action="/changetermin/{{vdata.idtermin}}" method="post">
+	<h5>Ändern der Daten für Termin {{vdata.idtermin}}</h5>
+	<label class="shortinput" for="VDatum">Datum der Veranstaltung:</label>
+	<input class="shortinput" id="VDatum" name="VDatum" type="text" maxlength="10" value="{{vdata.datum}}"/>
+	<label class="shorterinput" for="VStart">Startzeit:</label>
+	<input class="shorterinput"id="VStart" name="VStart" type="text" maxlength="8" value="{{vdata.startzeit}}"/>
+	<label class="shorterinput" for="VEnde">Endzeit:</label>
+	<input class="shorterinput"id="VEnde" name="VEnde" type="text" maxlength="8" value="{{vdata.endzeit}}"/>
+	<input type="submit" value="Ändern" class="submit waves-effect waves-light btn" />
+</form>
+{% endblock %}

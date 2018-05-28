@@ -1,0 +1,39 @@
+{% extends "base.html.twig" %}
+{% block content %}
+<a href="/prof/{{dozent}}" class="waves-effect waves-light btn" id="wayback">Professor Panel</a>
+<div id="displayArea" class="container row">
+	<div id="TopBar">
+		<div class="col s12">{{name}}</div>
+	</div>
+	<table class="col s12 veranstaltungtable">
+		<thead id="tablehead">
+			<tr>
+				{% if daten %}
+				<th class="col s2 sideways"></th>
+				{% for row in daten %}
+				<th class="col s1 sideways">{{row[0]}} </br> {{row[1]}}</th>
+				{% endfor %}
+			</tr>
+		</thead>
+		<tbody>
+			{% set foo = 0 %}
+			{% if studenten %}
+			{% for row in studenten %}
+			<tr>
+				<td class="col s2">{{row[0]}}</td>
+				{% for row2 in anwesenheit[foo] %}
+				{% if row2 %}
+				<td class="col s1 present">X</td>
+				{% else %}
+				<td class="col s1 present">&nbsp;</td>
+				{% endif %}
+				{% endfor %}
+			</tr>
+			{% set foo = foo + 1 %}
+			{% endfor %}
+			{% endif %}
+		</tbody>
+	</table>
+	{% endif %}
+</div>
+{% endblock %}

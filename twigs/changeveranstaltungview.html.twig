@@ -1,0 +1,10 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+<form id="changeForm" action="/changeveranstaltung/{{vdata.idveranstaltung}}" method="post">
+	<h5>Ändern der Daten für Veranstaltung {{vdata.idveranstaltung}}</h5>
+	<label for="VName">Name der Veranstaltung:</label>
+	<input id="VName" name="VName" type="text" maxlength="60" value="{{vdata.vname}}"/>
+	<input type="submit" value="Ändern" class="submit waves-effect waves-light btn" />
+</form>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+<div id="displayArea" class="container row">
+	<div id="TopBar">
+	<div class="col s6">{{name[0]}}</div>
+	<a href="#modal1" class= "col s3 waves-effect waves-light btn modal-trigger">Hinzufügen</a>
+	<a href="/admin/logout" class= "col s3 waves-effect waves-light btn">Logout</a>
+	</div>
+	{% if users %}
+	<div>
+		<table class="col s12">
+		<thead>
+          <tr>
+              <th class="col s1">ID</th>
+              <th class="col s2">Login</th>
+              <th class="col s2">Name</th>
+
+          </tr>
+        </thead>
+		<tbody>
+			{% for row in users %}
+			<tr>
+				<td class="col s1">{{ row.idusers }}</td>
+				<td class="col s2">{{ row.login }}</td>
+				<td class="col s6">{{ row.name }}</td> 
+				<td class="col s2 buttontable"><a href="/changeuser/{{ row.idusers }}" class= "col s12 waves-effect waves-light btn">Ändern</a></td>
+				<td class="col s1 buttontable">
+					<form class="tdelete" action="/deleteuser/{{ row.idusers }}" method="post">
+						<input name="pid" type="hidden" value="{{id}}"/>
+						<input type="submit" value="X" class="submit waves-effect waves-light btn col s12" />
+					</form>
+				</td>
+			</tr>
+{% endfor %}
+
+		</tbody>
+		</table>
+	</div>
+	{% endif %}
+</div>
+<div id="modal1" class="modal no-autoinit">
+	<div class="modal-content" id="modal-content">
+		<h4 id="modalHeader">Legen Sie einen neuen User an</h4>
+		<div id="formcontainer">
+			<form action="/admin/{{id}}" method="post">
+				<label for="DLogin">Login:</label>
+				<input id="DLogin" name="DLogin" type="text" maxlength="60"/>
+				<label for="DPass">Passwort:</label>
+				<input id="DPass" name="DPass" type="text" maxlength="60"/>
+				<label for="DName">Name:</label>
+				<input id="DName" name="DName" type="text" maxlength="60"/>
+				<input type="submit" value="Anlegen" class="submit waves-effect waves-light btn" />
+			</form>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

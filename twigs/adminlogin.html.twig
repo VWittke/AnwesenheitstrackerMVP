@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="loginform">
-	<form id="loginForm" action="/prof" method="post">
+	<form id="loginForm" action="/admin" method="post">
 		<label for="login">Login:</label>
 		<input name="login" type="text" maxlength="60"/>
 		<label for="passwort">Passwort:</label>
@@ -11,6 +11,6 @@
 		<input type="submit" value="Einloggen" class="submit waves-effect waves-light btn" />
 	</form>
 </div>
-<a href="/admin" class="waves-effect waves-light btn">Admin Login</a>
+<a href="/prof" class="waves-effect waves-light btn">Professor Login</a>
 
 {% endblock %}

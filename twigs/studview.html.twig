@@ -1,18 +1,34 @@
 {% extends "base.html.twig" %}
 
 {% block content %}
-
-
+{% if candelete %}
+<a href="/prof/{{info["dozent"]}}" class="waves-effect waves-light btn" id="wayback">Professor Panel</a>
+{% endif %}
 <div id="displayArea" class="container row">
 	<div id="TopBar">
-	<div class="col s4">{{info["vname"]}}</div>
+	<div class="col s3">{{info["vname"]}}</div>
 	<div class="col s2">{{info["name"]}}</div>
-	<div class="col s2">{{info["datum"]}}</div>
+	<div class="col s1">{{info["datum"]}}</div>
 	<div class="col s2">{{info["startzeit"]}} - {{info["endzeit"]}}</div>
+
+	{% if candelete or ( eintragen and not angemeldet )%}
 	<a href="#modal2" class= "col s2 waves-effect waves-light btn modal-trigger">Eintragen</a>
+	{% endif %}
+
+	{% if candelete and eintragen%}
+	<a href="/stoptimer/{{id}}" id="time" class= "col s2 waves-effect waves-light btn"></a>
+	<script>initTimer({{eintragzeit}});</script>
+	{% elseif candelete %}
+	<a href="/starttimer/{{id}}" class= "col s2 waves-effect waves-light btn">Starten</a>
+	{% elseif eintragen %}
+	<div class="col s2" id="time"></div>
+	<script>initTimer({{eintragzeit}});</script>
+	{% else %}
+	<div class= "col s2">Keine Eintragung möglich</div>
+	{% endif %}
 	</div>
 	
-	{% if anwesende %}
+	{% if anwesende and candelete%}
 	{% for row in anwesende %}
 	<div>
 		<div class="Eintragung col s12">
@@ -21,13 +37,17 @@
 		<div class="col s3">{{row[2]}}</div>
 		<div class="col s2">{{row[3]}}</div>
 		{% if candelete %}
-		<form id="deleteForm" action="/deletestud/{{id}}" method="post">
+		<form action="/deletestud/{{id}}" method="post">
 			<input name="anwid" type="hidden" value="{{ row.idanwesenheit }}"/>
-			<input type="submit" value="X" class="submit waves-effect waves-light btn" />
+			<input type="submit" value="X" class="submit waves-effect waves-light btn col s1" />
 		</form>
 		{% endif %}
 		</div>
 	{% endfor %}
+		{% elseif angemeldet and not candelete%}
+		<h1 class="col s12" id="message">Sie sind eingetragen!</h1>
+		{% elseif not angemeldet and not candelete %}
+		<h1 class="col s12" id="message">Sie sind nicht eingetragen!</h1>
 	{% endif %}
 </div>
 <div id="modal2" class="modal no-autoinit">
@@ -43,5 +63,6 @@
 			</form>
 		</div>
 	</div>
+</div>
 </div>
 {% endblock %}

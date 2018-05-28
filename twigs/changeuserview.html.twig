@@ -1,0 +1,14 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+<form id="changeForm" action="/changeuser/{{udata.idusers}}" method="post">
+	<h5>Ändern der Daten für User {{udata.idusers}}</h5>
+		<label for="DLogin">Login:</label>
+		<input id="DLogin" name="DLogin" type="text" value="{{udata.login}}" maxlength="60"/>
+		<label for="DPass">Passwort:</label>
+		<input id="DPass" name="DPass" type="text" maxlength="60"/>
+		<label for="DName">Name:</label>
+		<input id="DName" name="DName" type="text" value="{{udata.name}}" maxlength="60"/>
+	<input type="submit" value="Ändern" class="submit waves-effect waves-light btn" />
+</form>
+{% endblock %}
