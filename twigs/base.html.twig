@@ -15,11 +15,31 @@
 			<nav id="fhwnav">
 				<div class="nav-wrapper">
 					<a href="/"><img class="brand-logo" src="/images/fh_logo.png" alt="FHWedel Logo"></a>
+					<ul id="nav-mobile" class="right">
+						<li><a href="#modal4" class= "col s2 waves-effect waves-light btn modal-trigger bugbutton">Bug Reporten</a></li>
+					</ul>
 				</div>
 			</nav>
 		</header>
 		<main>
 		{% block content %}{% endblock %}
 		</main>
+		<div id="modal4" class="modal no-autoinit">
+			<div class="modal-content" id="modal-content">
+				<h4 id="modalHeader">Reporten Sie einen Bug.</h4>
+				<div id="formcontainer">
+					<form action="/bugreport" method="post">
+						<label for="BRName">Ihr Name:</label>
+						<input id="BRName" name="BRName" type="text" maxlength="60"/>
+						<label for="BName">Bug:</label>
+						<input id="BName" name="BName" type="text" maxlength="60"/>
+						<label for="BRep">Beschreibung:</label>
+						<textarea id="BRep" name="BRep" class="materialize-textarea"></textarea>
+						<input name="currentURL" type="hidden" value="{{CurrentUrl}}"/>
+						<input type="submit" value="Abschicken" class="submit waves-effect waves-light btn" />
+					</form>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>

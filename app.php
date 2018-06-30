@@ -23,6 +23,7 @@ use Symfony\Component\HttpFoundation\Request;
 $app = new Application();
 $app->register(new TwigServiceProvider());
 $app['twig.path'] = __DIR__ . "/twigs";
+$app['twig']->addGlobal("CurrentUrl", $_SERVER["REQUEST_URI"]);
 
 $app->get('/',
 function () use($app)
@@ -30,6 +31,21 @@ function () use($app)
 	$twig = $app['twig'];
 	return $twig->render('userlogin.html.twig');
 });
+
+
+$app->get('/testmail',
+function () use($app)
+{
+$to      = 'vitusw@gmx.net';
+$subject = 'the subject';
+$message = 'hello';
+$headers = 'From: BugTracker@anwesenheitstrackermvp.appspotmail.com' . "\r\n" .
+			'Reply-To: BugTracker@anwesenheitstrackermvp.appspotmail.com';
+
+mail($to, $subject, $message, $headers);
+});
+
+
 $app->get('/prof',
 function () use($app)
 {
@@ -109,6 +125,24 @@ function ($id) use($app)
 	$twig = $app['twig'];
 	return $twig->render('adminview.html.twig', ['name' => $name, 'users' => $users, 'id' => $id]);
 });
+
+$app->get('/register/{invitecode}',
+function ($invitecode) use($app)
+{
+	if (isset($_GET['err'])) {
+		$displaymessage = $_GET['err'];
+	}
+	$db = $app['database'];
+	$stmt = $db->prepare('SELECT used FROM invitecodes WHERE invitecode = :invitecode');
+	$stmt->execute([':invitecode' => $invitecode]);
+	$usestate = $stmt->fetch();
+	if (!is_array($usestate) || $usestate[0] == 1) {
+		return $app->redirect('/');
+	}
+	$twig = $app['twig'];
+	return $twig->render('registernewuser.html.twig', ['invitecode' => $invitecode, 'displaymessage' => $displaymessage]);
+});
+
 $app->get('/changeveranstaltung/{id}',
 function ($id) use($app)
 {
@@ -164,9 +198,9 @@ function ($id) use($app)
 	if (!checkSession($app, $dozentid)) {
 		return $app->redirect('/prof');
 	};
-	$stmt = $db->prepare('UPDATE termin SET eintragenab = FROM_UNIXTIME(:zeit) WHERE idtermin = :id');
+	$stmt = $db->prepare('UPDATE termin SET eintragenab = FROM_UNIXTIME(:zeit), datum =DATE(FROM_UNIXTIME(:zeit)) WHERE idtermin = :id');
 	$stmt->execute([':zeit' => time() , ':id' => $id]);
-	return $app->redirect('/' . $id);
+	return $app->redirect('/termin/' . $id);
 });
 $app->get('/stoptimer/{id}',
 function ($id) use($app)
@@ -180,7 +214,7 @@ function ($id) use($app)
 	};
 	$stmt = $db->prepare('UPDATE termin SET eintragenab = FROM_UNIXTIME(:zeit) WHERE idtermin = :id');
 	$stmt->execute([':zeit' => 0000000001, ':id' => $id]);
-	return $app->redirect('/' . $id);
+	return $app->redirect('/termin/' . $id);
 });
 $app->get('/veranstaltung/{id}',
 function ($id) use($app)
@@ -195,8 +229,8 @@ function ($id) use($app)
 	$stmt = $db->prepare('SELECT vname FROM veranstaltung WHERE idveranstaltung = :id');
 	$stmt->execute([':id' => $id]);
 	$name = $stmt->fetch() [0];
-	$stmt = $db->prepare('SELECT idtermin, datum FROM termin WHERE veranstaltung = :id');
-	$stmt->execute([':id' => $id]);
+	$stmt = $db->prepare('SELECT idtermin, datum FROM termin WHERE veranstaltung = :id AND datum < :maxdatum ORDER BY datum ASC');
+	$stmt->execute([':id' => $id, ':maxdatum' => "9999-12-31"]);
 	$daten = $stmt->fetchAll(PDO::FETCH_NUM);
 	$stmt = $db->prepare('SELECT DISTINCT anwesenheit.matrikelnummer FROM anwesenheit INNER JOIN termin ON anwesenheit.termin = termin.idtermin INNER JOIN veranstaltung ON termin.veranstaltung = veranstaltung.idveranstaltung WHERE veranstaltung.idveranstaltung = :id');
 	$stmt->execute([':id' => $id]);
@@ -219,16 +253,16 @@ function ($id) use($app)
 	$twig = $app['twig'];
 	return $twig->render('veranstaltungview.html.twig', ['name' => $name, 'daten' => $daten, 'studenten' => $studenten, 'anwesenheit' => $anwesenheit, 'id' => $id, 'dozent' => $dozentid]);
 });
-$app->get('/{id}',
+$app->get('/termin/{id}',
 function ($id) use($app)
 {
 	$db = $app['database'];
-	$candelete = false;
+	$candelete = true;
 	$stmt = $db->prepare('SELECT veranstaltung.dozent FROM veranstaltung INNER JOIN termin ON veranstaltung.idveranstaltung = termin.veranstaltung WHERE termin.idtermin = :id');
 	$stmt->execute([':id' => $id]);
 	$dozentid = $stmt->fetch() [0];
-	if (checkSession($app, $dozentid)) {
-		$candelete = true;
+	if (!checkSession($app, $dozentid)) {
+		return $app->redirect('/prof');
 	};
 	$stmt = $db->prepare('SELECT users.name, veranstaltung.vname, termin.datum, termin.startzeit, termin.endzeit, veranstaltung.dozent FROM veranstaltung INNER JOIN users ON veranstaltung.dozent = users.idusers INNER JOIN termin ON veranstaltung.idveranstaltung = termin.veranstaltung WHERE termin.idtermin = :id');
 	$stmt->execute([':id' => $id]);
@@ -246,6 +280,47 @@ function ($id) use($app)
 	if (($distance >= 0) && ($distance <= 900)) {
 		$eintragen = true;
 	}
+	$terminview = true;
+	return $twig->render('studview.html.twig', ['info' => $info, 'anwesende' => $anwesende, 'id' => $id, 'matnr' => $_COOKIE["Matrikelnummer"], 'candelete' => $candelete, 'eintragen' => $eintragen, 'eintragzeit' => $eintragzeit, 'angemeldet' => $angemeldet, 'terminview' => $terminview]);
+});
+
+$app->get('/{id}',
+function ($id) use($app)
+{
+	$db = $app['database'];
+	$stmt = $db->prepare('SELECT idtermin FROM termin WHERE veranstaltung = :id AND datum < :maxdatum ORDER BY datum DESC, startzeit DESC');
+	$stmt->execute([':id' => $id, ':maxdatum' => "9999-12-31"]);
+	$tid = $stmt->fetch() [0];
+	if (!$tid) {
+		return $app->redirect('/');
+	}
+	$displaymessage = false;
+	if (isset($_GET['first'])) {
+		$displaymessage = true;
+	}
+	$candelete = false;
+	$stmt = $db->prepare('SELECT veranstaltung.dozent FROM veranstaltung INNER JOIN termin ON veranstaltung.idveranstaltung = termin.veranstaltung WHERE termin.idtermin = :id');
+	$stmt->execute([':id' => $tid]);
+	$dozentid = $stmt->fetch() [0];
+	if (checkSession($app, $dozentid)) {
+		$candelete = true;
+	};
+	$stmt = $db->prepare('SELECT users.name, veranstaltung.vname, termin.datum, termin.startzeit, termin.endzeit, veranstaltung.dozent FROM veranstaltung INNER JOIN users ON veranstaltung.dozent = users.idusers INNER JOIN termin ON veranstaltung.idveranstaltung = termin.veranstaltung WHERE termin.idtermin = :id');
+	$stmt->execute([':id' => $tid]);
+	$info = $stmt->fetch(PDO::FETCH_ASSOC);
+	$stmt = $db->prepare('SELECT matrikelnummer, name, DATE(zeit), TIME(zeit), idanwesenheit FROM anwesenheit WHERE termin = :id');
+	$stmt->execute([':id' => $tid]);
+	$anwesende = $stmt->fetchAll();
+	$twig = $app['twig'];
+	$stmt = $db->prepare('SELECT eintragenab FROM termin WHERE idtermin = :id');
+	$stmt->execute([':id' => $tid]);
+	$eintragzeit = $stmt->fetch() [0];
+	$eintragzeit = strtotime($eintragzeit);
+	$distance = getLocalUnixtime() - $eintragzeit;
+	$eintragen = false;
+	if (($distance >= 0) && ($distance <= 900)) {
+		$eintragen = true;
+	}
 
 	$angemeldet = false;
 	if (!isset($_COOKIE['veranstaltungen'])) {
@@ -254,15 +329,22 @@ function ($id) use($app)
 		);
 		setcookie('veranstaltungen', json_encode($datainit));
 	}
+	
+	if (!isset($_COOKIE['termine'])) {
+		$datainit = array(
+			1
+		);
+		setcookie('termine', json_encode($datainit));
+	}
 
-	if (isset($_COOKIE['veranstaltungen'])) {
-		$data = json_decode($_COOKIE['veranstaltungen'], true);
-		if (in_array($id, $data)) {
+	if (isset($_COOKIE['termine'])) {
+		$data = json_decode($_COOKIE['termine'], true);
+		if (in_array($tid, $data)) {
 			$angemeldet = true;
 		}
 	}
-
-	return $twig->render('studview.html.twig', ['info' => $info, 'anwesende' => $anwesende, 'id' => $id, 'matnr' => $_COOKIE["Matrikelnummer"], 'candelete' => $candelete, 'eintragen' => $eintragen, 'eintragzeit' => $eintragzeit, 'angemeldet' => $angemeldet]);
+	$terminview = false;
+	return $twig->render('studview.html.twig', ['info' => $info, 'anwesende' => $anwesende, 'id' => $tid, 'matnr' => $_COOKIE["Matrikelnummer"], 'candelete' => $candelete, 'eintragen' => $eintragen, 'eintragzeit' => $eintragzeit, 'angemeldet' => $angemeldet, 'terminview' => $terminview, 'displaymessage' => $displaymessage]);
 });
 $app->post('/prof',
 function (Request $request) use($app)
@@ -309,14 +391,13 @@ function (Request $request) use($app)
 		return $app->redirect('/prof');
 	};
 	$vid = $request->request->get('vid');
-	$tdatum = $request->request->get('TDatum');
+	$tdatum = "9999-12-31";
 	$tstart = $request->request->get('TStart');
 	$tende = $request->request->get('TEnde');
 	$tid = 0;
 	do {
-		$tid = randomNumber(6);
+		$tid = randomNumber(8);
 	}
-
 	while (checkTermin($db, $tid));
 	$stmt = $db->prepare('INSERT INTO termin (idtermin, datum, startzeit, endzeit, veranstaltung) VALUES (:tid, :tdatum, :tstart, :tende, :vid)');
 	$stmt->execute([':tid' => $tid, ':tdatum' => $tdatum, ':tstart' => $tstart, ':tende' => $tende, ':vid' => $vid]);
@@ -426,6 +507,11 @@ function (Request $request, $id) use($app)
 		return $app->redirect('/prof');
 	};
 	$db = $app['database'];
+	$vid = 0;
+	do {
+		$vid = randomNumber(6);
+	}
+	while (checkTermin($db, $vid));
 	$vname = $request->request->get('VName');
 	$stmt = $db->prepare('INSERT INTO veranstaltung (idveranstaltung, vname, dozent) VALUES (:vid, :vname, :id)');
 	$stmt->execute([':vid' => $vid, ':vname' => $vname, ':id' => $id]);
@@ -450,12 +536,132 @@ function (Request $request) use($app)
 {
 	$db = $app['database'];
 	$redirect = "";
-	$terminid = $request->request->get('termin');
-	if (checkTermin($db, $terminid)) {
-		$redirect = $terminid;
+	$vid = $request->request->get('veranstaltung');
+	if (checkVeranstaltung($db, $vid)) {
+		$redirect = $vid;
 	};
 	return $app->redirect('/' . $redirect);
 });
+
+$app->post('/register/{invitecode}',
+function (Request $request, $invitecode) use($app)
+{
+	$db = $app['database'];
+	$stmt = $db->prepare('SELECT used FROM invitecodes WHERE invitecode = :invitecode');
+	$stmt->execute([':invitecode' => $invitecode]);
+	$usestate = $stmt->fetch();
+	if (!is_array($usestate) || $usestate[0] == 1) {
+		return $app->redirect('/');
+	}
+	$pname = $request->request->get('PName');
+	$login = $request->request->get('Login');
+	$pass1 = $request->request->get('Pass1');
+	$pass2 = $request->request->get('Pass2');
+	$stmt = $db->prepare('SELECT EXISTS(SELECT * FROM users WHERE login = :login)');
+	$stmt->execute([':login' => $login]);
+	if ($stmt->fetch()[0]) {
+		return $app->redirect('/register/' . $invitecode . '?err=2');
+	}
+	if ($pass1 != $pass2) {
+		return $app->redirect('/register/' . $invitecode . '?err=3');
+	}
+	$stmt = $db->prepare('INSERT INTO users (login, passwort, name, isadmin) VALUES (:login, :passwort, :name, 0)');
+	$stmt->execute([':login' => $login, ':passwort' => hash("sha256", $pass1) , ':name' => $pname]);
+	$stmt = $db->prepare('UPDATE invitecodes SET used = 1 WHERE invitecode = :invitecode');
+	$stmt->execute([':invitecode' => $invitecode]);
+	return $app->redirect('/prof');
+});
+
+$app->post('/sendinvite',
+function (Request $request) use($app)
+{
+	$db = $app['database'];
+	$email = $request->request->get('EMail');
+	$mess = $request->request->get('InvMess');
+	$pid = $request->request->get('pid');
+	$pname = $request->request->get('pname');
+	if (!checkSession($app, $pid)) {
+		return $app->redirect('/prof');
+	};
+	$invitecode = hash("sha256", randomNumber(32));
+	$stmt = $db->prepare('INSERT INTO invitecodes (invitecode, createdBy) VALUES (:invitecode, :pid)');
+	$stmt->execute([':invitecode' => $invitecode, ':pid' => $pid]);
+	date_default_timezone_set('Europe/Berlin');
+	$to      = $email;
+	$subject = $pname . ' hat Sie eingeladen den Anwesenheitstracker zu testen';
+	$message = '
+			<html>
+				<head>
+					<title>Einladung ' . $invitecode . '</title>
+				</head>
+				<body>
+					<h4>' . $pname . ' hat Sie eingeladen den Anwesenheitstracker zu testen</h4>
+					<p>Sie können sich Ihren eigenen Account unter folgendem Link erstellen:<p>
+					<a href="https://anwesenheitstrackermvp.appspot.com/register/' . $invitecode . '">https://anwesenheitstrackermvp.appspot.com/register/' . $invitecode . '</a>
+					<p>' . $pname . ' hat folgende Nachricht für Sie:</p>
+					<p>' . $mess . '</p>
+				</body>
+			</html>
+			';
+	$headers[] = 'MIME-Version: 1.0';
+	$headers[] = 'Content-type: text/html; charset=iso-8859-1';
+	$headers[] = 'From: InviteService@anwesenheitstrackermvp.appspotmail.com';
+	mail($to, $subject, $message, implode("\r\n", $headers));
+	return $app->redirect('/prof');
+});
+
+$app->post('/bugreport',
+function (Request $request) use($app)
+{
+	$currentURL = $request->request->get('currentURL');
+	$brname = $request->request->get('BRName');
+	$bname = $request->request->get('BName');
+	$brep = $request->request->get('BRep');
+	date_default_timezone_set('Europe/Berlin');
+	$to      = 'vitusw@gmx.net,fls@fh-wedel.de';
+	$subject = 'Bug-Report ' . date("D M j G:i:s T Y")  . ' : ' . $bname;
+	$message = '
+			<html>
+				<head>
+					<title>Bug-Report ' . date("D M j G:i:s T Y")  . '</title>
+				</head>
+				<body>
+					<h4>Um ' . date("D M j G:i:s T Y")  . ' schickte ' . $brname . ' folgenden Bug-Report:</h4>
+					<p>' . $bname . ':<p>
+					<p>' . $brep . '</p>
+					<p>Gesendet von der URI: ' . $currentURL . '</p>
+				</body>
+			</html>
+			';
+	$headers[] = 'MIME-Version: 1.0';
+	$headers[] = 'Content-type: text/html; charset=iso-8859-1';
+	$headers[] = 'From: BugTracker@anwesenheitstrackermvp.appspotmail.com';
+	mail($to, $subject, $message, implode("\r\n", $headers));
+	return $app->redirect($currentURL);
+});
+
+$app->post('/termin/{id}',
+function (Request $request, $id) use($app)
+{
+	$db = $app['database'];
+	$candelete = true;
+	$stmt = $db->prepare('SELECT veranstaltung.dozent FROM veranstaltung INNER JOIN termin ON veranstaltung.idveranstaltung = termin.veranstaltung WHERE termin.idtermin = :id');
+	$stmt->execute([':id' => $id]);
+	$dozentid = $stmt->fetch() [0];
+	if (!checkSession($app, $dozentid)) {
+		return $app->redirect('/prof');
+	};
+
+	$matnr = $request->request->get('MNr');
+	$name = $request->request->get('StudName');
+	
+	$stmt = $db->prepare('INSERT INTO anwesenheit (matrikelnummer, name, termin, zeit) VALUES (:matnr, :name, :id, FROM_UNIXTIME(:zeit))');
+	$stmt->execute([':id' => $id, ':matnr' => $matnr, ':name' => $name, ':zeit' => time() ]);
+
+
+	return $app->redirect('/termin/' . $id);
+});
+
 $app->post('/{id}',
 function (Request $request, $id) use($app)
 {
@@ -482,16 +688,33 @@ function (Request $request, $id) use($app)
 		$name = $request->request->get('StudName');
 		setcookie("Matrikelnummer", $matnr);
 		if (!$candelete) {
-			$data = json_decode($_COOKIE['veranstaltungen'], true);
+			$data = json_decode($_COOKIE['termine'], true);
 			array_push($data, $id);
-			setcookie('veranstaltungen', json_encode($data));
+			setcookie('termine', json_encode($data));
 		}
 
 		$stmt = $db->prepare('INSERT INTO anwesenheit (matrikelnummer, name, termin, zeit) VALUES (:matnr, :name, :id, FROM_UNIXTIME(:zeit))');
 		$stmt->execute([':id' => $id, ':matnr' => $matnr, ':name' => $name, ':zeit' => time() ]);
 	}
-
-	return $app->redirect('/' . $id);
+	$stmt = $db->prepare('SELECT veranstaltung.idveranstaltung FROM veranstaltung INNER JOIN termin ON veranstaltung.idveranstaltung = termin.veranstaltung WHERE termin.idtermin = :id');
+	$stmt->execute([':id' => $id]);
+	$vid = $stmt->fetch() [0];
+	
+	$URLaddition = "";
+	if (isset($_COOKIE['veranstaltungen'])) {
+		$data = json_decode($_COOKIE['veranstaltungen'], true);
+		if (!in_array($vid, $data)) {
+			$URLaddition = "?first";
+		}
+	}
+	if (!$candelete) {
+		$data = json_decode($_COOKIE['veranstaltungen'], true);
+		if (!in_array($vid, $data)) {
+			array_push($data, $vid);
+		}
+		setcookie('veranstaltungen', json_encode($data));
+	}
+	return $app->redirect('/' . $vid . $URLaddition);
 });
 $app['database'] =
 function () use($app)
@@ -577,6 +800,13 @@ function checkTermin($db, $tid)
 {
 	$stmt = $db->prepare('SELECT EXISTS(SELECT * FROM termin WHERE idtermin = :id)');
 	$stmt->execute([':id' => $tid]);
+	return $stmt->fetch() [0];
+}
+
+function checkVeranstaltung($db, $vid)
+{
+	$stmt = $db->prepare('SELECT EXISTS(SELECT * FROM veranstaltung WHERE idveranstaltung = :id)');
+	$stmt->execute([':id' => $vid]);
 	return $stmt->fetch() [0];
 }
 

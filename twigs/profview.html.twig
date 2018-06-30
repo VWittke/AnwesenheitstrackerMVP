@@ -4,8 +4,9 @@
 <div id="displayArea" class="container row">
 	<div id="TopBar">
 	<div class="col s6">Veranstaltungen von {{name[0]}}</div>
-	<a href="#modal1" class= "col s3 waves-effect waves-light btn modal-trigger">Hinzufügen</a>
-	<a href="/prof/logout" class= "col s3 waves-effect waves-light btn">Logout</a>
+	<a href="#modal5" class= "col s2 waves-effect waves-light btn modal-trigger">Einladen</a>
+	<a href="#modal1" class= "col s2 waves-effect waves-light btn modal-trigger">Hinzufügen</a>
+	<a href="/prof/logout" class= "col s2 waves-effect waves-light btn">Logout</a>
 	</div>
 	{% if veranstaltungen %}
 	{% for row in veranstaltungen %}
@@ -34,10 +35,14 @@
 		{% for row2 in row.termine %}
 			<tr>
 				<td class="col s3">{{ "%06d"|format(row2.idtermin) }}</td>
+				{% if row2.datum == "9999-12-31" %}
+				<td class="col s2">-</td>
+				{% else %}
 				<td class="col s2">{{ row2.datum }}</td>
+				{% endif %}
 				<td class="col s1">{{ row2.startzeit }}</td> 
 				<td class="col s1">{{ row2.endzeit }}</td>
-				<td class="col s2 buttontable"><a href="/{{row2.idtermin}}" class= "col s12 waves-effect waves-light btn">Anzeigen</a></td>
+				<td class="col s2 buttontable"><a href="/termin/{{row2.idtermin}}" class= "col s12 waves-effect waves-light btn">Anzeigen</a></td>
 				<td class="col s2 buttontable"><a href="/changetermin/{{row2.idtermin}}" class= "col s12 waves-effect waves-light btn">Ändern</a></td>
 				<td class="col s1 buttontable">
 					<form class="tdelete" action="/deletetermin/{{row2.idtermin}}" method="post">
@@ -72,15 +77,30 @@
 		<h4 id="modalHeader">Legen Sie einen neuen Termin an</h4>
 		<div id="formcontainer">
 			<form id="addForm" action="/addtermin" method="post">
-				<label class="shortinput" for="TDatum">Datum des Termins:</label>
-				<label class="shorterinput" for="TStart">Startzeit:</label>
-				<label class="shorterinput" for="TEnde">Endzeit:</label>
-				<input class="shortinput datepicker no-autoinit" id="TDatum" name="TDatum" type="text" maxlength="10"/>
-				<input class="shorterinput timepicker no-autoinit"id="TStart" name="TStart" type="text" maxlength="8"/>
-				<input class="shorterinput timepicker no-autoinit"id="TEnde" name="TEnde" type="text" maxlength="8"/>
+				<label class="shortinput" for="TStart">Startzeit:</label>
+				<label class="shortinput" for="TEnde">Endzeit:</label>
+				<input class="shortinput timepicker no-autoinit"id="TStart" name="TStart" type="text" maxlength="8"/>
+				<input class="shortinput timepicker no-autoinit"id="TEnde" name="TEnde" type="text" maxlength="8"/>
 				<input name="pid" type="hidden" value="{{id}}"/>
 				<input name="vid" id="vid" type="hidden" value=""/>
 				<input type="submit" value="Anlegen" class="submit waves-effect waves-light btn" />
+			</form>
+		</div>
+	</div>
+</div>
+
+<div id="modal5" class="modal no-autoinit">
+	<div class="modal-content" id="modal-content">
+		<h4 id="modalHeader">Laden Sie einen neuen User ein.</h4>
+		<div id="formcontainer">
+			<form action="/sendinvite" method="post">
+				<label for="EMail">EMail des Empfängers:</label>
+				<input id="EMail" name="EMail" type="text" maxlength="60"/>
+				<label for="InvMess">Nachricht an den Empfänger:</label>
+				<textarea id="InvMess" name="InvMess" class="materialize-textarea"></textarea>
+				<input name="pid" type="hidden" value="{{id}}"/>
+				<input name="pname" type="hidden" value="{{name[0]}}"/>
+				<input type="submit" value="Einladen" class="submit waves-effect waves-light btn" />
 			</form>
 		</div>
 	</div>

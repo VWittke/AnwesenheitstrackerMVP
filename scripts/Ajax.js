@@ -21,6 +21,21 @@ $(document).ready(function(e) {
 			$('#vid').val("");
 		},
 	});
+	$('#modal4').modal({
+		dismissible: true,
+		onCloseEnd: function() {
+			$('#BRName').val("");
+			$('#BName').val("");
+			$('#BRep').val("");
+		},
+	});
+	$('#modal5').modal({
+		dismissible: true,
+		onCloseEnd: function() {
+			$('#EMail').val("");
+			$('#InvMess').val("");
+		},
+	});
 });
 
 function addVID(e) {
@@ -52,3 +67,19 @@ function initTimer(timestamp) {
 	display = document.querySelector('#time');
 	startTimer(expiration, display);
 };
+
+function notifyUser(messageid) {
+	var message = "NotSet";
+	switch(messageid) {
+		case 1:
+			message = "Sie könnnen und sollten sich diese Seite bookmarken, um in Folgeveranstaltungen leichteren Zugang zu dieser Seite zu haben.";
+			break;
+		case 2:
+			message = "Der Login ist leider schon vergeben.";
+			break;
+		case 3:
+			message = "Die Passwörter stimmen leider nicht überein.";
+			break;
+	}
+	alert(message);
+}

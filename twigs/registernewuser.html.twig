@@ -1,0 +1,19 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+<form id="changeForm" action="/register/{{invitecode}}" method="post">
+	<h5>Bitte geben Sie folgende Daten ein, um einen Professorenaccount zu kreieren.</h5>
+	<label for="PName">Ihr Name:</label>
+	<input id="PName" name="PName" type="text" maxlength="60"/>
+	<label for="Login">Ihr Login:</label>
+	<input id="Login" name="Login" type="text" maxlength="60"/>
+	<label for="Pass1">Passwort:</label>
+	<input id="Pass1" name="Pass1" type="password" maxlength="60"/>
+	<label for="Pass2">Passwort wiederholen:</label>
+	<input id="Pass2" name="Pass2" type="password" maxlength="60"/>
+	<input type="submit" value="Anlegen" class="submit waves-effect waves-light btn" />
+</form>
+{% if displaymessage %}
+<script>notifyUser({{displaymessage}});</script>
+{% endif %}
+{% endblock %}

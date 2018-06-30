@@ -8,7 +8,11 @@
 	<div id="TopBar">
 	<div class="col s3">{{info["vname"]}}</div>
 	<div class="col s2">{{info["name"]}}</div>
+	{% if info["datum"] == "9999-12-31" %}
+	<div class="col s1">-</div>
+	{% else %}
 	<div class="col s1">{{info["datum"]}}</div>
+	{% endif %}
 	<div class="col s2">{{info["startzeit"]}} - {{info["endzeit"]}}</div>
 
 	{% if candelete or ( eintragen and not angemeldet )%}
@@ -54,7 +58,11 @@
 	<div class="modal-content" id="modal-content">
 		<h4 id="modalHeader">Tragen Sie sich für die Veranstaltung ein</h4>
 		<div id="formcontainer">
+			{% if terminview %}
+			<form id="addForm" action="/termin/{{id}}" method="post">
+			{% else %}
 			<form id="addForm" action="/{{id}}" method="post">
+			{% endif %}
 				<label class="shortinput" for="MNr">Matrikelnummer:</label>
 				<label class="shortinput" for="StudName">Name (optional):</label>
 				<input class="shortinput" id="MNr" name="MNr" type="text" maxlength="10" value="{{matnr}}"/>
@@ -65,4 +73,7 @@
 	</div>
 </div>
 </div>
+{% if displaymessage %}
+<script>notifyUser(1);</script>
+{% endif %}
 {% endblock %}
