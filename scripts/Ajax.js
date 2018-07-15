@@ -14,6 +14,12 @@ $(document).ready(function(e) {
 	});
 	$('#modal3').modal({
 		dismissible: true,
+		onOpenStart: function() {
+			var currentdate = new Date();
+			var in15Mins = new Date(+new Date() + (15 * 60 * 1000))
+			$('#TStart').val(currentdate.getHours() + ":" + (("0" + currentdate.getMinutes()).slice(-2)));
+			$('#TEnde').val(in15Mins.getHours() + ":" + (("0" + in15Mins.getMinutes()).slice(-2)));
+		},
 		onCloseEnd: function() {
 			$('#TDatum').val("");
 			$('#TStart').val("");
@@ -72,13 +78,19 @@ function notifyUser(messageid) {
 	var message = "NotSet";
 	switch(messageid) {
 		case 1:
-			message = "Sie könnnen und sollten sich diese Seite bookmarken, um in Folgeveranstaltungen leichteren Zugang zu dieser Seite zu haben.";
+			message = "Sie können und sollten sich diese Seite bookmarken, um in Folgeveranstaltungen leichteren Zugang zu dieser Seite zu haben.";
 			break;
 		case 2:
-			message = "Der Login ist leider schon vergeben.";
+			message = "Zu dem angegebenen Code existiert keine Veranstaltung.";
 			break;
 		case 3:
-			message = "Die Passwörter stimmen leider nicht überein.";
+			message = "Zu dem angegebenen Code läuft aktuell keine Veranstaltung.";
+			break;
+		case 4:
+			message = "Der angegebenene Login ist schon vergeben. Wählen Sie bitte einen anderen.";
+			break;
+		case 5:
+			message = "Die eingegebenen Passwörter stimmen leider nicht überein.";
 			break;
 	}
 	alert(message);

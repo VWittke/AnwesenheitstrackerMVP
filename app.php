@@ -28,55 +28,47 @@ $app['twig']->addGlobal("CurrentUrl", $_SERVER["REQUEST_URI"]);
 $app->get('/',
 function () use($app)
 {
+	session_start();
+	if (isset($_SESSION['message'])) {
+		$displaymessage = $_SESSION['message'];
+		unset($_SESSION['message']);
+	}
 	$twig = $app['twig'];
-	return $twig->render('userlogin.html.twig');
+	return $twig->render('userlogin.html.twig', ['displaymessage' => $displaymessage]);
 });
 
-
-$app->get('/testmail',
-function () use($app)
-{
-$to      = 'vitusw@gmx.net';
-$subject = 'the subject';
-$message = 'hello';
-$headers = 'From: BugTracker@anwesenheitstrackermvp.appspotmail.com' . "\r\n" .
-			'Reply-To: BugTracker@anwesenheitstrackermvp.appspotmail.com';
-
-mail($to, $subject, $message, $headers);
-});
-
-
-$app->get('/prof',
+$app->get('/veranstalter',
 function () use($app)
 {
 	session_start();
 	if ($_SESSION["userid"]) {
-		return $app->redirect('/prof/' . $_SESSION["userid"]);
+		return $app->redirect('/veranstalter/' . $_SESSION["userid"]);
+	} else if ($_SESSION["Adminuserid"] == 3) {
+		return $app->redirect('/admin/' . $_SESSION["Adminuserid"]);
 	}
 
 	$db = $app['database'];
 	$twig = $app['twig'];
 	return $twig->render('proflogin.html.twig');
 });
-$app->get('/admin',
+$app->get('/anlegen',
 function () use($app)
 {
 	session_start();
-	if ($_SESSION["Adminuserid"] == 3) {
-		return $app->redirect('/admin/' . $_SESSION["Adminuserid"]);
+	if (isset($_SESSION['message'])) {
+		$displaymessage = $_SESSION['message'];
+		unset($_SESSION['message']);
 	}
-
-	$db = $app['database'];
 	$twig = $app['twig'];
-	return $twig->render('adminlogin.html.twig');
+	return $twig->render('addveranstaltunganduser.html.twig', ['displaymessage' => $displaymessage]);
 });
-$app->get('/prof/logout',
+$app->get('/veranstalter/logout',
 function () use($app)
 {
 	session_start();
 	session_unset();
 	session_destroy();
-	return $app->redirect('/prof');
+	return $app->redirect('/veranstalter');
 });
 $app->get('/admin/logout',
 function () use($app)
@@ -84,13 +76,13 @@ function () use($app)
 	session_start();
 	session_unset();
 	session_destroy();
-	return $app->redirect('/admin');
+	return $app->redirect('/veranstalter');
 });
-$app->get('/prof/{id}',
+$app->get('/veranstalter/{id}',
 function ($id) use($app)
 {
 	if (!checkSession($app, $id)) {
-		return $app->redirect('/prof');
+		return $app->redirect('/veranstalter');
 	};
 	$db = $app['database'];
 	$stmt = $db->prepare('SELECT name FROM users WHERE idusers = :id');
@@ -151,7 +143,7 @@ function ($id) use($app)
 	$stmt->execute([':id' => $id]);
 	$dozentid = $stmt->fetch() [0];
 	if (!checkSession($app, $dozentid)) {
-		return $app->redirect('/prof');
+		return $app->redirect('/veranstalter');
 	};
 	$stmt = $db->prepare('SELECT * FROM veranstaltung WHERE idveranstaltung = :id');
 	$stmt->execute([':id' => $id]);
@@ -167,7 +159,7 @@ function ($id) use($app)
 	$stmt->execute([':id' => $id]);
 	$dozentid = $stmt->fetch() [0];
 	if (!checkSession($app, $dozentid)) {
-		return $app->redirect('/prof');
+		return $app->redirect('/veranstalter');
 	};
 	$stmt = $db->prepare('SELECT * FROM termin WHERE idtermin = :id');
 	$stmt->execute([':id' => $id]);
@@ -196,7 +188,7 @@ function ($id) use($app)
 	$stmt->execute([':id' => $id]);
 	$dozentid = $stmt->fetch() [0];
 	if (!checkSession($app, $dozentid)) {
-		return $app->redirect('/prof');
+		return $app->redirect('/veranstalter');
 	};
 	$stmt = $db->prepare('UPDATE termin SET eintragenab = FROM_UNIXTIME(:zeit), datum =DATE(FROM_UNIXTIME(:zeit)) WHERE idtermin = :id');
 	$stmt->execute([':zeit' => time() , ':id' => $id]);
@@ -210,7 +202,7 @@ function ($id) use($app)
 	$stmt->execute([':id' => $id]);
 	$dozentid = $stmt->fetch() [0];
 	if (!checkSession($app, $dozentid)) {
-		return $app->redirect('/prof');
+		return $app->redirect('/veranstalter');
 	};
 	$stmt = $db->prepare('UPDATE termin SET eintragenab = FROM_UNIXTIME(:zeit) WHERE idtermin = :id');
 	$stmt->execute([':zeit' => 0000000001, ':id' => $id]);
@@ -224,7 +216,7 @@ function ($id) use($app)
 	$stmt->execute([':id' => $id]);
 	$dozentid = $stmt->fetch() [0];
 	if (!checkSession($app, $dozentid)) {
-		return $app->redirect('/prof');
+		return $app->redirect('/veranstalter');
 	};
 	$stmt = $db->prepare('SELECT vname FROM veranstaltung WHERE idveranstaltung = :id');
 	$stmt->execute([':id' => $id]);
@@ -262,7 +254,7 @@ function ($id) use($app)
 	$stmt->execute([':id' => $id]);
 	$dozentid = $stmt->fetch() [0];
 	if (!checkSession($app, $dozentid)) {
-		return $app->redirect('/prof');
+		return $app->redirect('/veranstalter');
 	};
 	$stmt = $db->prepare('SELECT users.name, veranstaltung.vname, termin.datum, termin.startzeit, termin.endzeit, veranstaltung.dozent FROM veranstaltung INNER JOIN users ON veranstaltung.dozent = users.idusers INNER JOIN termin ON veranstaltung.idveranstaltung = termin.veranstaltung WHERE termin.idtermin = :id');
 	$stmt->execute([':id' => $id]);
@@ -295,8 +287,10 @@ function ($id) use($app)
 		return $app->redirect('/');
 	}
 	$displaymessage = false;
-	if (isset($_GET['first'])) {
+	session_start();
+	if (isset($_SESSION['message'])) {
 		$displaymessage = true;
+		unset($_SESSION['message']);
 	}
 	$candelete = false;
 	$stmt = $db->prepare('SELECT veranstaltung.dozent FROM veranstaltung INNER JOIN termin ON veranstaltung.idveranstaltung = termin.veranstaltung WHERE termin.idtermin = :id');
@@ -346,7 +340,7 @@ function ($id) use($app)
 	$terminview = false;
 	return $twig->render('studview.html.twig', ['info' => $info, 'anwesende' => $anwesende, 'id' => $tid, 'matnr' => $_COOKIE["Matrikelnummer"], 'candelete' => $candelete, 'eintragen' => $eintragen, 'eintragzeit' => $eintragzeit, 'angemeldet' => $angemeldet, 'terminview' => $terminview, 'displaymessage' => $displaymessage]);
 });
-$app->post('/prof',
+$app->post('/veranstalter',
 function (Request $request) use($app)
 {
 	$db = $app['database'];
@@ -358,28 +352,18 @@ function (Request $request) use($app)
 		session_start();
 		$_SESSION["login"] = $login;
 		$_SESSION["userid"] = $userid;
-		return $app->redirect('/prof/' . $userid);
+		return $app->redirect('/veranstalter/' . $userid);
 	}
 	else {
-		return $app->redirect('/prof');
-	}
-});
-$app->post('/admin',
-function (Request $request) use($app)
-{
-	$db = $app['database'];
-	$login = $request->request->get('login');
-	$passwort = $request->request->get('passwort');
-	$passworthash = hash("sha256", $passwort);
-	$userid = checkAdminLogin($login, $passworthash, $app);
-	if ($userid) {
-		session_start();
-		$_SESSION["Adminlogin"] = $login;
-		$_SESSION["Adminuserid"] = $userid;
-		return $app->redirect('/admin/' . $userid);
-	}
-	else {
-		return $app->redirect('/prof');
+		$adminid = checkAdminLogin($login, $passworthash, $app);
+		if ($adminid) {
+			session_start();
+			$_SESSION["Adminlogin"] = $login;
+			$_SESSION["Adminuserid"] = $adminid;
+			return $app->redirect('/admin/' . $adminid);
+		} else {
+			return $app->redirect('/veranstalter');
+		}
 	}
 });
 $app->post('/addtermin',
@@ -388,7 +372,7 @@ function (Request $request) use($app)
 	$db = $app['database'];
 	$pid = $request->request->get('pid');
 	if (!checkSession($app, $pid)) {
-		return $app->redirect('/prof');
+		return $app->redirect('/veranstalter');
 	};
 	$vid = $request->request->get('vid');
 	$tdatum = "9999-12-31";
@@ -401,7 +385,7 @@ function (Request $request) use($app)
 	while (checkTermin($db, $tid));
 	$stmt = $db->prepare('INSERT INTO termin (idtermin, datum, startzeit, endzeit, veranstaltung) VALUES (:tid, :tdatum, :tstart, :tende, :vid)');
 	$stmt->execute([':tid' => $tid, ':tdatum' => $tdatum, ':tstart' => $tstart, ':tende' => $tende, ':vid' => $vid]);
-	return $app->redirect('/prof/' . $pid);
+	return $app->redirect('/veranstalter/' . $pid);
 });
 $app->post('/deletestud/{id}',
 function (Request $request, $id) use($app)
@@ -411,7 +395,7 @@ function (Request $request, $id) use($app)
 	$stmt->execute([':id' => $id]);
 	$dozentid = $stmt->fetch() [0];
 	if (!checkSession($app, $dozentid)) {
-		return $app->redirect('/prof');
+		return $app->redirect('/veranstalter');
 	};
 	$anwid = $request->request->get('anwid');
 	$stmt = $db->prepare('DELETE FROM anwesenheit WHERE idanwesenheit = :id');
@@ -423,24 +407,24 @@ function (Request $request, $id) use($app)
 {
 	$pid = $request->request->get('pid');
 	if (!checkSession($app, $pid)) {
-		return $app->redirect('/prof');
+		return $app->redirect('/veranstalter');
 	};
 	$db = $app['database'];
 	$stmt = $db->prepare('DELETE FROM veranstaltung WHERE idveranstaltung = :id');
 	$stmt->execute([':id' => $id]);
-	return $app->redirect('/prof/' . $pid);
+	return $app->redirect('/veranstalter/' . $pid);
 });
 $app->post('/deletetermin/{id}',
 function (Request $request, $id) use($app)
 {
 	$pid = $request->request->get('pid');
 	if (!checkSession($app, $pid)) {
-		return $app->redirect('/prof');
+		return $app->redirect('/veranstalter');
 	};
 	$db = $app['database'];
 	$stmt = $db->prepare('DELETE FROM termin WHERE idtermin = :id');
 	$stmt->execute([':id' => $id]);
-	return $app->redirect('/prof/' . $pid);
+	return $app->redirect('/veranstalter/' . $pid);
 });
 $app->post('/deleteuser/{id}',
 function (Request $request, $id) use($app)
@@ -462,12 +446,12 @@ function (Request $request, $id) use($app)
 	$stmt->execute([':id' => $id]);
 	$dozentid = $stmt->fetch() [0];
 	if (!checkSession($app, $dozentid)) {
-		return $app->redirect('/prof');
+		return $app->redirect('/veranstalter');
 	};
 	$vname = $request->request->get('VName');
 	$stmt = $db->prepare('UPDATE veranstaltung SET vname = :vname WHERE idveranstaltung = :id');
 	$stmt->execute([':vname' => $vname, ':id' => $id]);
-	return $app->redirect('/prof/' . $dozentid);
+	return $app->redirect('/veranstalter/' . $dozentid);
 });
 $app->post('/changetermin/{id}',
 function (Request $request, $id) use($app)
@@ -477,14 +461,14 @@ function (Request $request, $id) use($app)
 	$stmt->execute([':id' => $id]);
 	$dozentid = $stmt->fetch() [0];
 	if (!checkSession($app, $dozentid)) {
-		return $app->redirect('/prof');
+		return $app->redirect('/veranstalter');
 	};
 	$vdatum = $request->request->get('VDatum');
 	$vstart = $request->request->get('VStart');
 	$vende = $request->request->get('VEnde');
 	$stmt = $db->prepare('UPDATE termin SET datum = :vdatum, startzeit = :vstart, endzeit = :vende WHERE idtermin = :id');
 	$stmt->execute([':vdatum' => $vdatum, ':vstart' => $vstart, ':vende' => $vende, ':id' => $id]);
-	return $app->redirect('/prof/' . $dozentid);
+	return $app->redirect('/veranstalter/' . $dozentid);
 });
 $app->post('/changeuser/{id}',
 function (Request $request, $id) use($app)
@@ -500,22 +484,22 @@ function (Request $request, $id) use($app)
 	$stmt->execute([':login' => $dlogin, ':passwort' => hash("sha256", $dpass) , ':name' => $dname, ':id' => $id]);
 	return $app->redirect('/admin/' . "3");
 });
-$app->post('/prof/{id}',
+$app->post('/veranstalter/{id}',
 function (Request $request, $id) use($app)
 {
 	if (!checkSession($app, $id)) {
-		return $app->redirect('/prof');
+		return $app->redirect('/veranstalter');
 	};
 	$db = $app['database'];
 	$vid = 0;
 	do {
 		$vid = randomNumber(6);
 	}
-	while (checkTermin($db, $vid));
+	while (checkVeranstaltung($db, $vid));
 	$vname = $request->request->get('VName');
 	$stmt = $db->prepare('INSERT INTO veranstaltung (idveranstaltung, vname, dozent) VALUES (:vid, :vname, :id)');
 	$stmt->execute([':vid' => $vid, ':vname' => $vname, ':id' => $id]);
-	return $app->redirect('/prof/' . $id);
+	return $app->redirect('/veranstalter/' . $id);
 });
 $app->post('/admin/{id}',
 function (Request $request, $id) use($app)
@@ -538,7 +522,15 @@ function (Request $request) use($app)
 	$redirect = "";
 	$vid = $request->request->get('veranstaltung');
 	if (checkVeranstaltung($db, $vid)) {
-		$redirect = $vid;
+		if (checkVeranstaltungValid($db, $vid)) {
+			$redirect = $vid;
+		} else {
+			session_start();
+			$_SESSION["message"] = 3;
+		}
+	} else {
+		session_start();
+		$_SESSION["message"] = 2;
 	};
 	return $app->redirect('/' . $redirect);
 });
@@ -569,7 +561,44 @@ function (Request $request, $invitecode) use($app)
 	$stmt->execute([':login' => $login, ':passwort' => hash("sha256", $pass1) , ':name' => $pname]);
 	$stmt = $db->prepare('UPDATE invitecodes SET used = 1 WHERE invitecode = :invitecode');
 	$stmt->execute([':invitecode' => $invitecode]);
-	return $app->redirect('/prof');
+	return $app->redirect('/veranstalter');
+});
+$app->post('/registernewuser',
+function (Request $request) use($app)
+{
+	$db = $app['database'];
+	$vname = $request->request->get('VName');
+	$pname = $request->request->get('PName');
+	$login = $request->request->get('Login');
+	$pass1 = $request->request->get('Pass1');
+	$pass2 = $request->request->get('Pass2');
+	$stmt = $db->prepare('SELECT EXISTS(SELECT * FROM users WHERE login = :login)');
+	$stmt->execute([':login' => $login]);
+	if ($stmt->fetch()[0]) {
+		session_start();
+		$_SESSION["message"] = 4;
+		return $app->redirect('/anlegen');
+	}
+	if ($pass1 != $pass2) {
+		session_start();
+		$_SESSION["message"] = 5;
+		return $app->redirect('/anlegen');
+	}
+	$passworthash = hash("sha256", $pass1);
+	$stmt = $db->prepare('INSERT INTO users (login, passwort, name, isadmin) VALUES (:login, :passwort, :name, 0)');
+	$stmt->execute([':login' => $login, ':passwort' => $passworthash, ':name' => $pname]);
+	$userid = checkLogin($login, $passworthash, $app);
+	$vid = 0;
+	do {
+		$vid = randomNumber(6);
+	}
+	while (checkVeranstaltung($db, $vid));
+	$stmt = $db->prepare('INSERT INTO veranstaltung (idveranstaltung, vname, dozent) VALUES (:vid, :vname, :id)');
+	$stmt->execute([':vid' => $vid, ':vname' => $vname, ':id' => $userid]);
+	session_start();
+	$_SESSION["login"] = $login;
+	$_SESSION["userid"] = $userid;
+	return $app->redirect('/veranstalter/' . $userid);
 });
 
 $app->post('/sendinvite',
@@ -581,7 +610,7 @@ function (Request $request) use($app)
 	$pid = $request->request->get('pid');
 	$pname = $request->request->get('pname');
 	if (!checkSession($app, $pid)) {
-		return $app->redirect('/prof');
+		return $app->redirect('/veranstalter');
 	};
 	$invitecode = hash("sha256", randomNumber(32));
 	$stmt = $db->prepare('INSERT INTO invitecodes (invitecode, createdBy) VALUES (:invitecode, :pid)');
@@ -607,7 +636,7 @@ function (Request $request) use($app)
 	$headers[] = 'Content-type: text/html; charset=iso-8859-1';
 	$headers[] = 'From: InviteService@anwesenheitstrackermvp.appspotmail.com';
 	mail($to, $subject, $message, implode("\r\n", $headers));
-	return $app->redirect('/prof');
+	return $app->redirect('/veranstalter');
 });
 
 $app->post('/bugreport',
@@ -649,7 +678,7 @@ function (Request $request, $id) use($app)
 	$stmt->execute([':id' => $id]);
 	$dozentid = $stmt->fetch() [0];
 	if (!checkSession($app, $dozentid)) {
-		return $app->redirect('/prof');
+		return $app->redirect('/veranstalter');
 	};
 
 	$matnr = $request->request->get('MNr');
@@ -704,7 +733,8 @@ function (Request $request, $id) use($app)
 	if (isset($_COOKIE['veranstaltungen'])) {
 		$data = json_decode($_COOKIE['veranstaltungen'], true);
 		if (!in_array($vid, $data)) {
-			$URLaddition = "?first";
+			session_start();
+			$_SESSION["message"] = 1;
 		}
 	}
 	if (!$candelete) {
@@ -714,7 +744,7 @@ function (Request $request, $id) use($app)
 		}
 		setcookie('veranstaltungen', json_encode($data));
 	}
-	return $app->redirect('/' . $vid . $URLaddition);
+	return $app->redirect('/' . $vid);
 });
 $app['database'] =
 function () use($app)
@@ -808,6 +838,20 @@ function checkVeranstaltung($db, $vid)
 	$stmt = $db->prepare('SELECT EXISTS(SELECT * FROM veranstaltung WHERE idveranstaltung = :id)');
 	$stmt->execute([':id' => $vid]);
 	return $stmt->fetch() [0];
+}
+
+function checkVeranstaltungValid($db, $vid)
+{
+	$stmt = $db->prepare('SELECT eintragenab FROM termin WHERE veranstaltung = :id AND datum < :maxdatum ORDER BY datum DESC, startzeit DESC');
+	$stmt->execute([':id' => $vid, ':maxdatum' => "9999-12-31"]);
+	$eintragzeit = $stmt->fetch() [0];
+	$eintragzeit = strtotime($eintragzeit);
+	$distance = getLocalUnixtime() - $eintragzeit;
+	$eintragen = false;
+	if (($distance >= 0) && ($distance <= 900)) {
+		$eintragen = true;
+	}
+	return $eintragen;
 }
 
 function getLocalUnixtime()

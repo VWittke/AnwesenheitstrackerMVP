@@ -16,6 +16,7 @@
   margin: auto;
   position: absolute;
   top: -40%; left: 0; bottom: 0; right: 0;
+  text-align: center;
 }
 
 #changeForm {
@@ -169,4 +170,8 @@ i input {
 
 .present {
 	text-align: center !important;
+}
+
+#anlegbutton{
+	margin-top: 50px;
 }

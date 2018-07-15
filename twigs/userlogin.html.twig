@@ -8,7 +8,11 @@
 		<input name="veranstaltung" type="text" maxlength="6"/>
 		<input type="submit" value="Anzeigen" class="submit waves-effect waves-light btn" />
 	</form>
+	<a href="/anlegen" id="anlegbutton" class="waves-effect waves-light btn">Veranstaltung anlegen</a>
 </div>
-<a href="/prof" class="waves-effect waves-light btn">Professor Login</a>
+<a href="/veranstalter" class="waves-effect waves-light btn">Veranstalter Login</a>
+{% if displaymessage %}
+	<script>notifyUser({{displaymessage}});</script>
+{% endif %}
 
 {% endblock %}
