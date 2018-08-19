@@ -1,3 +1,12 @@
+var messages = [
+    "Not set",
+    "Sie können und sollten sich diese Seite bookmarken, um in Folgeveranstaltungen leichteren Zugang zu dieser Seite zu haben.",
+    "Zu dem angegebenen Code existiert keine Veranstaltung.",
+	"Zu dem angegebenen Code läuft aktuell keine Veranstaltung.",
+	"Der angegebenene Login ist schon vergeben. Wählen Sie bitte einen anderen.",
+	"Die eingegebenen Passwörter stimmen leider nicht überein."
+];
+
 $(document).ready(function(e) {
 	M.AutoInit();
 	$('#modal1').modal({
@@ -75,23 +84,7 @@ function initTimer(timestamp) {
 };
 
 function notifyUser(messageid) {
-	var message = "NotSet";
-	switch(messageid) {
-		case 1:
-			message = "Sie können und sollten sich diese Seite bookmarken, um in Folgeveranstaltungen leichteren Zugang zu dieser Seite zu haben.";
-			break;
-		case 2:
-			message = "Zu dem angegebenen Code existiert keine Veranstaltung.";
-			break;
-		case 3:
-			message = "Zu dem angegebenen Code läuft aktuell keine Veranstaltung.";
-			break;
-		case 4:
-			message = "Der angegebenene Login ist schon vergeben. Wählen Sie bitte einen anderen.";
-			break;
-		case 5:
-			message = "Die eingegebenen Passwörter stimmen leider nicht überein.";
-			break;
-	}
-	alert(message);
+	var out = "NotSet";
+	out = messages[messageid];
+	alert(out);
 }

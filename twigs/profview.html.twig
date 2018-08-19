@@ -6,7 +6,7 @@
 	<div class="col s6">Veranstaltungen von {{name[0]}}</div>
 	{#<a href="#modal5" class= "col s2 waves-effect waves-light btn modal-trigger">Einladen</a>#}
 	<a href="#modal1" class= "col s3 waves-effect waves-light btn modal-trigger">Hinzufügen</a>
-	<a href="/veranstalter/logout" class= "col s3 waves-effect waves-light btn">Logout</a>
+	<a href="/logout" class= "col s3 waves-effect waves-light btn">Logout</a>
 	</div>
 	{% if veranstaltungen %}
 	{% for row in veranstaltungen %}
@@ -83,7 +83,7 @@
 				<input class="shortinput timepicker no-autoinit"id="TEnde" name="TEnde" type="text" maxlength="8"/>
 				<input name="pid" type="hidden" value="{{id}}"/>
 				<input name="vid" id="vid" type="hidden" value=""/>
-				<input type="submit" value="Anlegen" class="submit waves-effect waves-light btn" />
+				<input type="submit" value="Anlegen und Start" class="submit waves-effect waves-light btn" />
 			</form>
 		</div>
 	</div>
