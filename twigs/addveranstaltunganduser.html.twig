@@ -1,20 +1,22 @@
 {% extends "base.html.twig" %}
 
 {% block content %}
-<form id="changeForm" action="/registernewuser" method="post">
-	<h5>Bitte geben Sie folgende Daten ein, um einen Account zu kreieren und die Veranstaltung anzulegen.</h5>
-	<label for="VName">Name der Veranstaltung:</label>
-	<input id="VName" name="VName" type="text" maxlength="60"/>
-	<label for="PName">Ihr Name:</label>
-	<input id="PName" name="PName" type="text" maxlength="60"/>
-	<label for="Login">Ihr Login:</label>
-	<input id="Login" name="Login" type="text" maxlength="60"/>
-	<label for="Pass1">Passwort:</label>
-	<input id="Pass1" name="Pass1" type="password" maxlength="60"/>
-	<label for="Pass2">Passwort wiederholen:</label>
-	<input id="Pass2" name="Pass2" type="password" maxlength="60"/>
-	<input type="submit" value="Anlegen" class="submit waves-effect waves-light btn" />
-</form>
+<div id="displayArea" class="container row">
+	<form id="changeForm" class="col l4 offset-l4 s12" action="/registernewuser" method="post">
+		<h5>Bitte geben Sie folgende Daten ein, um einen Account zu kreieren und die Veranstaltung anzulegen.</h5>
+		<label for="VName">Name der Veranstaltung:</label>
+		<input id="VName" name="VName" type="text" maxlength="60"/>
+		<label for="PName">Ihr Name:</label>
+		<input id="PName" name="PName" type="text" maxlength="60"/>
+		<label for="Login">Ihr Login:</label>
+		<input id="Login" name="Login" type="text" maxlength="60"/>
+		<label for="Pass1">Passwort:</label>
+		<input id="Pass1" name="Pass1" type="password" maxlength="60"/>
+		<label for="Pass2">Passwort wiederholen:</label>
+		<input id="Pass2" name="Pass2" type="password" maxlength="60"/>
+		<input type="submit" value="Anlegen" class="submit waves-effect waves-light btn col l4 offset-l4 s12" />
+	</form>
+</div>
 {% if displaymessage %}
 <script>notifyUser({{displaymessage}});</script>
 {% endif %}

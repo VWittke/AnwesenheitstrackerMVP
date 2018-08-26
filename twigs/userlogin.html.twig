@@ -1,16 +1,18 @@
 {% extends "base.html.twig" %}
 
 {% block content %}
-
-<div class="loginform">
-	<form id="userloginForm" action="/" method="post">
-		<label for="veranstaltung">Tragen Sie den Code der Veranstaltung hier ein:</label>
-		<input name="veranstaltung" type="text" maxlength="6"/>
-		<input type="submit" value="Anzeigen" class="submit waves-effect waves-light btn" />
-	</form>
-	<a href="/anlegen" id="anlegbutton" class="waves-effect waves-light btn">Veranstaltung anlegen</a>
-</div>
 <a href="/veranstalter" class="waves-effect waves-light btn">Veranstalter Login</a>
+<div id="displayArea" class="container row">
+	<div class="loginform col l4 offset-l4 s12">
+		<form id="userloginForm" action="/" method="post">
+			<label for="veranstaltung">Tragen Sie den Code der Veranstaltung hier ein:</label>
+			<input name="veranstaltung" type="text" maxlength="6"/>
+			<input type="submit" value="Anzeigen" class="submit waves-effect waves-light btn col l4 offset-l4 s12" />
+		</form>
+		<a href="/anlegen" id="anlegbutton" class="waves-effect waves-light btn col l8 offset-l2 s12">Veranstaltung anlegen</a>
+	</div>
+</div>
+
 {% if displaymessage %}
 	<script>notifyUser({{displaymessage}});</script>
 {% endif %}

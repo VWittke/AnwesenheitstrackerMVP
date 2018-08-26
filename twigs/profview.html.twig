@@ -3,48 +3,48 @@
 {% block content %}
 <div id="displayArea" class="container row">
 	<div id="TopBar">
-	<div class="col s6">Veranstaltungen von {{name[0]}}</div>
-	{#<a href="#modal5" class= "col s2 waves-effect waves-light btn modal-trigger">Einladen</a>#}
-	<a href="#modal1" class= "col s3 waves-effect waves-light btn modal-trigger">Hinzufügen</a>
-	<a href="/logout" class= "col s3 waves-effect waves-light btn">Logout</a>
+	<div id="currentVeranstalter" class="col l6 s12">Veranstaltungen von {{name[0]}}</div>
+	{#<a href="#modal5" class= "col l2 s12 waves-effect waves-light btn modal-trigger">Einladen</a>#}
+	<a href="#modal1" class= "col l3 s12 waves-effect waves-light btn modal-trigger">Hinzufügen</a>
+	<a href="/logout" class= "col l3 s12 waves-effect waves-light btn">Logout</a>
 	</div>
 	{% if veranstaltungen %}
 	{% for row in veranstaltungen %}
 	<div>
-		<div class="Veranstaltung col s12" id="{{row.idveranstaltung}}">
-		<div class="col s5">{{row.idveranstaltung}} - {{ row.vname }}</div>
-		<a href="/veranstaltung/{{row.idveranstaltung}}" class= "col s2 waves-effect waves-light btn">Anzeigen</a>
-		<a href="/changeveranstaltung/{{row.idveranstaltung}}" class= "col s2 waves-effect waves-light btn">Ändern</a>
-		<a href="#modal3" class= "col s2 waves-effect waves-light btn modal-trigger" onclick="addVID(this)">+ Termin</a>
-		<form action="/deleteveranstaltung/{{row.idveranstaltung}}" method="post">
-			<input name="pid" type="hidden" value="{{id}}"/>
-			<input type="submit" value="X" class="submit waves-effect waves-light btn col s1" />
-		</form>
+		<div class="Veranstaltung col l12 s12" id="{{row.idveranstaltung}}">
+			<div class="veranstaltungsname col l5 s12">{{row.idveranstaltung}} - {{ row.vname }}</div>
+			<a href="/veranstaltung/{{row.idveranstaltung}}" class= "col l2 s6 waves-effect waves-light btn">Anzeigen</a>
+			<a href="/changeveranstaltung/{{row.idveranstaltung}}" class= "col l2 s6 waves-effect waves-light btn">Ändern</a>
+			<a href="#modal3" class= "col l2 s6 waves-effect waves-light btn modal-trigger" onclick="addVID(this)">+ Termin</a>
+			<form action="/deleteveranstaltung/{{row.idveranstaltung}}" method="post">
+				<input name="pid" type="hidden" value="{{id}}"/>
+				<input type="submit" value="X" class="submit waves-effect waves-light btn col l1 s6" />
+			</form>
 		</div>
 		{% if row.termine %}
-		<table class="col s12">
+		<table class="col l12 s12">
 		<thead>
           <tr>
-              <th class="col s3">ID</th>
-              <th class="col s2">Datum</th>
-              <th class="col s1">Startzeit</th>
-			  <th class="col s1">Endzeit</th>
+              <th class="col l3 s4">ID</th>
+              <th class="col l2 s4">Datum</th>
+              <th class="col l1 s2">Startzeit</th>
+			  <th class="col l1 s2">Endzeit</th>
           </tr>
         </thead>
 		<tbody>
 		{% for row2 in row.termine %}
 			<tr>
-				<td class="col s3">{{ "%06d"|format(row2.idtermin) }}</td>
+				<td class="col l3 s4">{{ "%06d"|format(row2.idtermin) }}</td>
 				{% if row2.datum == "9999-12-31" %}
-				<td class="col s2">-</td>
+				<td class="col l2 s4">-</td>
 				{% else %}
-				<td class="col s2">{{ row2.datum }}</td>
+				<td class="col l2 s4">{{ row2.datum }}</td>
 				{% endif %}
-				<td class="col s1">{{ row2.startzeit }}</td> 
-				<td class="col s1">{{ row2.endzeit }}</td>
-				<td class="col s2 buttontable"><a href="/termin/{{row2.idtermin}}" class= "col s12 waves-effect waves-light btn">Anzeigen</a></td>
-				<td class="col s2 buttontable"><a href="/changetermin/{{row2.idtermin}}" class= "col s12 waves-effect waves-light btn">Ändern</a></td>
-				<td class="col s1 buttontable">
+				<td class="col l1 s2">{{ row2.startzeit }}</td> 
+				<td class="col l1 s2">{{ row2.endzeit }}</td>
+				<td class="col l2 s5 buttontable"><a href="/termin/{{row2.idtermin}}" class= "col s12 waves-effect waves-light btn">Anzeigen</a></td>
+				<td class="col l2 s5 buttontable"><a href="/changetermin/{{row2.idtermin}}" class= "col s12 waves-effect waves-light btn">Ändern</a></td>
+				<td class="col l1 s2 buttontable">
 					<form class="tdelete" action="/deletetermin/{{row2.idtermin}}" method="post">
 						<input name="pid" type="hidden" value="{{id}}"/>
 						<input type="submit" value="X" class="submit waves-effect waves-light btn col s12" />
@@ -58,11 +58,12 @@
 	</div>
 	{% endfor %}
 	{% endif %}
+	<div id="timepickerContainer"></div>
 </div>
 <div id="modal1" class="modal no-autoinit">
-	<div class="modal-content" id="modal-content">
-		<h4 id="modalHeader">Legen Sie eine neue Veranstaltung an</h4>
-		<div id="formcontainer">
+	<div class="modal-content" id="modal-content1">
+		<h4 id="modalHeader1">Legen Sie eine neue Veranstaltung an</h4>
+		<div id="formcontainer1">
 			<form action="/veranstalter/{{id}}" method="post">
 				<label for="VName">Name der Veranstaltung:</label>
 				<input id="VName" name="VName" type="text" maxlength="60"/>
@@ -72,10 +73,11 @@
 	</div>
 </div>
 
+<!-- Festlegen des Charsets auf UTF-8 
 <div id="modal3" class="modal no-autoinit">
-	<div class="modal-content" id="modal-content">
-		<h4 id="modalHeader">Legen Sie einen neuen Termin an</h4>
-		<div id="formcontainer">
+	<div class="modal-content" id="modal-content3">
+		<h4 id="modalHeader3">Legen Sie einen neuen Termin an</h4>
+		<div id="formcontainer4">
 			<form id="addForm" action="/addtermin" method="post">
 				<label class="shortinput" for="TStart">Startzeit:</label>
 				<label class="shortinput" for="TEnde">Endzeit:</label>
@@ -88,11 +90,29 @@
 		</div>
 	</div>
 </div>
+-->
+
+<div id="modal3" class="modal no-autoinit">
+	<div class="modal-content" id="modal-content3">
+		<h4 id="modalHeader3">Legen Sie einen neuen Termin an</h4>
+		<div id="formcontainer4">
+			<form id="addForm" action="/addtermin" method="post">
+				<label class="shortinput" for="TStart">Startzeit:</label>
+				<label class="shortinput" for="TEnde">Endzeit:</label>
+				<input class="shortinput timepicker no-autoinit" id="TStart" name="TStart" type="text" maxlength="8"/>
+				<input class="shortinput timepicker no-autoinit" id="TEnde" name="TEnde" type="text" maxlength="8"/>
+				<input name="pid" type="hidden" value="{{id}}"/>
+				<input name="vid" id="vid" type="hidden" value=""/>
+				<input type="submit" value="Anlegen und Start" class="submit waves-effect waves-light btn" />
+			</form>
+		</div>
+	</div>
+</div>
 
 <div id="modal5" class="modal no-autoinit">
-	<div class="modal-content" id="modal-content">
-		<h4 id="modalHeader">Laden Sie einen neuen User ein.</h4>
-		<div id="formcontainer">
+	<div class="modal-content" id="modal-content5">
+		<h4 id="modalHeader5">Laden Sie einen neuen User ein.</h4>
+		<div id="formcontainer5">
 			<form action="/sendinvite" method="post">
 				<label for="EMail">EMail des Empfängers:</label>
 				<input id="EMail" name="EMail" type="text" maxlength="60"/>

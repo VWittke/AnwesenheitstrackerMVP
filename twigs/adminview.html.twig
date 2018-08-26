@@ -3,29 +3,29 @@
 {% block content %}
 <div id="displayArea" class="container row">
 	<div id="TopBar">
-	<div class="col s6">{{name[0]}}</div>
-	<a href="#modal1" class= "col s3 waves-effect waves-light btn modal-trigger">Hinzufügen</a>
-	<a href="/logout" class= "col s3 waves-effect waves-light btn">Logout</a>
+	<div class="col l6 s12">{{name[0]}}</div>
+	<a href="#modal1" class= "col l3 s6 waves-effect waves-light btn modal-trigger">Hinzufügen</a>
+	<a href="/logout" class= "col l3 s6 waves-effect waves-light btn">Logout</a>
 	</div>
 	{% if users %}
 	<div>
-		<table class="col s12">
+		<table class="col l12 s12">
 		<thead>
           <tr>
-              <th class="col s1">ID</th>
-              <th class="col s2">Login</th>
-              <th class="col s2">Name</th>
+              <th class="col l1 s2">ID</th>
+              <th class="col l2 s5">Login</th>
+              <th class="col l2 s5">Name</th>
 
           </tr>
         </thead>
 		<tbody>
 			{% for row in users %}
 			<tr>
-				<td class="col s1">{{ row.idusers }}</td>
-				<td class="col s2">{{ row.login }}</td>
-				<td class="col s6">{{ row.name }}</td> 
-				<td class="col s2 buttontable"><a href="/changeuser/{{ row.idusers }}" class= "col s12 waves-effect waves-light btn">Ändern</a></td>
-				<td class="col s1 buttontable">
+				<td class="col l1 s2">{{ row.idusers }}</td>
+				<td class="col l2 s5">{{ row.login }}</td>
+				<td class="col l6 s5">{{ row.name }}</td> 
+				<td class="col l2 s10 buttontable"><a href="/changeuser/{{ row.idusers }}" class= "col s12 waves-effect waves-light btn">Ändern</a></td>
+				<td class="col l1 s2 buttontable">
 					<form class="tdelete" action="/deleteuser/{{ row.idusers }}" method="post">
 						<input name="pid" type="hidden" value="{{id}}"/>
 						<input type="submit" value="X" class="submit waves-effect waves-light btn col s12" />

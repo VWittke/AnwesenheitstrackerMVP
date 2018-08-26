@@ -25,9 +25,9 @@
 		{% block content %}{% endblock %}
 		</main>
 		<div id="modal4" class="modal no-autoinit">
-			<div class="modal-content" id="modal-content">
-				<h4 id="modalHeader">Reporten Sie einen Bug.</h4>
-				<div id="formcontainer">
+			<div class="modal-content" id="modal-content4">
+				<h4 id="modalHeader4">Reporten Sie einen Bug.</h4>
+				<div id="formcontainer4">
 					<form action="/bugreport" method="post">
 						<label for="BRName">Ihr Name:</label>
 						<input id="BRName" name="BRName" type="text" maxlength="60"/>
@@ -38,6 +38,14 @@
 						<input name="currentURL" type="hidden" value="{{CurrentUrl}}"/>
 						<input type="submit" value="Abschicken" class="submit waves-effect waves-light btn" />
 					</form>
+				</div>
+			</div>
+		</div>
+		<div id="modal6" class="modal no-autoinit">
+			<div class="modal-content" id="modal-content6">
+				<h4 id="modalHeader6">Meldung</h4>
+				<div id="notification">
+					
 				</div>
 			</div>
 		</div>

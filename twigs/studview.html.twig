@@ -6,29 +6,29 @@
 {% endif %}
 <div id="displayArea" class="container row">
 	<div id="TopBar">
-	<div class="col s3">{{info["vname"]}}</div>
-	<div class="col s2">{{info["name"]}}</div>
+	<div class="col l3 s3">{{info["vname"]}}</div>
+	<div class="col l2 s3">{{info["name"]}}</div>
 	{% if info["datum"] == "9999-12-31" %}
-	<div class="col s1">-</div>
+	<div class="col l1 s3">-</div>
 	{% else %}
-	<div class="col s1">{{info["datum"]}}</div>
+	<div class="col l1 s3">{{info["datum"]}}</div>
 	{% endif %}
-	<div class="col s2">{{info["startzeit"]}} - {{info["endzeit"]}}</div>
+	<div class="col l2 s3">{{info["startzeit"]}} - {{info["endzeit"]}}</div>
 
 	{% if candelete or ( eintragen and not angemeldet )%}
-	<a href="#modal2" class= "col s2 waves-effect waves-light btn modal-trigger">Eintragen</a>
+	<a href="#modal2" class= "col l2 s6 waves-effect waves-light btn modal-trigger">Eintragen</a>
 	{% endif %}
 
 	{% if candelete and eintragen%}
-	<a href="/stoptimer/{{id}}" id="time" class= "col s2 waves-effect waves-light btn"></a>
+	<a href="/stoptimer/{{id}}" id="time" class= "col l2 s6 waves-effect waves-light btn"></a>
 	<script>initTimer({{eintragzeit}});</script>
 	{% elseif candelete %}
-	<a href="/starttimer/{{id}}" class= "col s2 waves-effect waves-light btn">Starten</a>
+	<a href="/starttimer/{{id}}" class= "col l2 s6 waves-effect waves-light btn">Starten</a>
 	{% elseif eintragen %}
-	<div class="col s2" id="time"></div>
+	<div class="col l2 s6" id="time"></div>
 	<script>initTimer({{eintragzeit}});</script>
 	{% else %}
-	<div class= "col s2">Keine Eintragung möglich</div>
+	<div class= "col l2 s6">Keine Eintragung möglich</div>
 	{% endif %}
 	</div>
 	
@@ -55,9 +55,9 @@
 	{% endif %}
 </div>
 <div id="modal2" class="modal no-autoinit">
-	<div class="modal-content" id="modal-content">
-		<h4 id="modalHeader">Tragen Sie sich für die Veranstaltung ein</h4>
-		<div id="formcontainer">
+	<div class="modal-content" id="modal-content2">
+		<h4 id="modalHeader2">Tragen Sie sich für die Veranstaltung ein</h4>
+		<div id="formcontainer2">
 			{% if terminview %}
 			<form id="addForm" action="/termin/{{id}}" method="post">
 			{% else %}

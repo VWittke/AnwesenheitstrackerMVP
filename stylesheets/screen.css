@@ -10,22 +10,22 @@
 	background-color: #1c2764;
 }
 
-.loginform {
-  width: 300px;
-  height: 0;
-  margin: auto;
-  position: absolute;
-  top: -40%; left: 0; bottom: 0; right: 0;
-  text-align: center;
-}
+/* .loginform { */
+  /* width: 300px; */
+  /* height: 0; */
+  /* margin: auto; */
+  /* position: absolute; */
+  /* top: -40%; left: 0; bottom: 0; right: 0; */
+  /* text-align: center; */
+/* } */
 
-#changeForm {
-  width: 300px;
-  height: 0;
-  margin: auto;
-  position: absolute;
-  top: -60%; left: 0; bottom: 0; right: 0;
-}
+/* #changeForm { */
+  /* width: 300px; */
+  /* height: 0; */
+  /* margin: auto; */
+  /* position: absolute; */
+  /* top: -60%; left: 0; bottom: 0; right: 0; */
+/* } */
 
 #changeForm h5 {
 	text-align: center;
@@ -51,7 +51,9 @@ main {
 
 #TopBar {
 	width: 100%;
-	height: 43px;
+	height: 100%;
+	display: block;
+	overflow: auto;
 	border: solid #26a69a;
 	border-radius: 5px;
 }
@@ -62,7 +64,7 @@ main {
 }
 
 #displayArea {
-	padding-top: 30px;
+	padding-top: 45px;
 }
 
 .Veranstaltung {
@@ -71,7 +73,9 @@ main {
 	margin-top: 20px;
 	border: solid #26a69a;
 	border-radius: 5px;
-	height: 55px;
+	height: 100%;
+	display: block;
+	overflow: auto;
 	vertical-align: middle;
 }
 
@@ -88,15 +92,10 @@ main {
 #displayArea .Veranstaltung div {
 	overflow: hidden;
 	height: 100%;
-	padding: 2px;
 }
 
-.Veranstaltung a  {
-	margin-top: 7px;
-}
-
-.Veranstaltung i {
-	margin-top: 7px;
+.Veranstaltung input {
+	cursor: pointer;
 }
 
 .Veranstaltung input {
@@ -172,6 +171,22 @@ i input {
 	text-align: center !important;
 }
 
-#anlegbutton{
+#anlegbutton {
 	margin-top: 50px;
+}
+
+#currentVeranstalter {
+	height: 100%;
+}
+
+#modal3 {
+	overflow: visible;
+}
+
+#displayArea .Veranstaltung {
+	padding: 0;
+}
+
+#displayArea td {
+	padding-bottom: 2px;
 }

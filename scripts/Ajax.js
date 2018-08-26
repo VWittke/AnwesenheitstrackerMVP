@@ -51,6 +51,28 @@ $(document).ready(function(e) {
 			$('#InvMess').val("");
 		},
 	});
+	$('.timepicker').timepicker({
+		twelveHour: false,
+		autoClose: true,
+		i18n: {
+			cancel: "Abbrechen",
+			done: "Fertig",
+		},
+	});
+	$('.datepicker').datepicker({
+		format: 'yyyy-mm-dd',
+		autoClose: true,
+		firstDay: 1,
+		i18n: {
+			cancel: "Abbrechen",
+			done: "Fertig",
+			months: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+			monthsShort: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+			weekdays: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+			weekdaysShort: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+			weekdaysAbbrev: ['S','M','D','M','D','F','S'],
+		},
+	});
 });
 
 function addVID(e) {
@@ -84,7 +106,13 @@ function initTimer(timestamp) {
 };
 
 function notifyUser(messageid) {
-	var out = "NotSet";
-	out = messages[messageid];
-	alert(out);
+	$(document).ready(function() {
+		var out = "NotSet";
+		out = messages[messageid];
+		$('#modal6').modal({
+			dismissible: true
+		});
+		$('#notification').text(out);
+		$('#modal6').modal('open');
+	});
 }

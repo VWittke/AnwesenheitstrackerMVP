@@ -1,15 +1,16 @@
 {% extends "base.html.twig" %}
 
 {% block content %}
-
-<div class="loginform">
-	<form id="loginForm" action="/veranstalter" method="post">
-		<label for="login">Login:</label>
-		<input name="login" type="text" maxlength="60"/>
-		<label for="passwort">Passwort:</label>
-		<input name="passwort" type="password" maxlength="60"/>
-		<input type="submit" value="Einloggen" class="submit waves-effect waves-light btn" />
-	</form>
+<div id="displayArea" class="container row">
+	<div class="loginform col l4 offset-l4 s12">
+		<form id="loginForm" action="/veranstalter" method="post">
+			<label for="login">Login:</label>
+			<input name="login" type="text" maxlength="60"/>
+			<label for="passwort">Passwort:</label>
+			<input name="passwort" type="password" maxlength="60"/>
+			<input type="submit" value="Einloggen" class="submit waves-effect waves-light btn col l4 offset-l4 s12" />
+		</form>
+	</div>
 </div>
 
 {% endblock %}
