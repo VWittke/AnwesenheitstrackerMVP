@@ -23,12 +23,12 @@
 			<tr>
 				<td class="col l1 s2">{{ row.idusers }}</td>
 				<td class="col l2 s5">{{ row.login }}</td>
-				<td class="col l6 s5">{{ row.name }}</td> 
-				<td class="col l2 s10 buttontable"><a href="/changeuser/{{ row.idusers }}" class= "col s12 waves-effect waves-light btn">Ändern</a></td>
-				<td class="col l1 s2 buttontable">
+				<td class="col l5 s5">{{ row.name }}</td> 
+				<td class="col l2 s6 buttontable"><a href="/changeuser/{{ row.idusers }}" class= "col s12 waves-effect waves-light btn">Ändern</a></td>
+				<td class="col l2 s6 buttontable">
 					<form class="tdelete" action="/deleteuser/{{ row.idusers }}" method="post">
 						<input name="pid" type="hidden" value="{{id}}"/>
-						<input type="submit" value="X" class="submit waves-effect waves-light btn col s12" />
+						<input type="submit" value="Löschen" class="submit waves-effect waves-light btn col s12" />
 					</form>
 				</td>
 			</tr>

@@ -36,14 +36,14 @@
 	{% for row in anwesende %}
 	<div>
 		<div class="Eintragung col s12">
-		<div class="col s3">{{row.matrikelnummer}}</div>
+		<div class="col s2">{{row.matrikelnummer}}</div>
 		<div class="col s3">{{row.name}}</div>
 		<div class="col s3">{{row[2]}}</div>
 		<div class="col s2">{{row[3]}}</div>
 		{% if candelete %}
 		<form action="/deletestud/{{id}}" method="post">
 			<input name="anwid" type="hidden" value="{{ row.idanwesenheit }}"/>
-			<input type="submit" value="X" class="submit waves-effect waves-light btn col s1" />
+			<input type="submit" value="Löschen" class="submit waves-effect waves-light btn col s2" />
 		</form>
 		{% endif %}
 		</div>

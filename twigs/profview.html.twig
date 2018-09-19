@@ -12,42 +12,40 @@
 	{% for row in veranstaltungen %}
 	<div>
 		<div class="Veranstaltung col l12 s12" id="{{row.idveranstaltung}}">
-			<div class="veranstaltungsname col l5 s12">{{row.idveranstaltung}} - {{ row.vname }}</div>
+			<div class="veranstaltungsname col l4 s12">{{row.idveranstaltung}} - {{ row.vname }}</div>
 			<a href="/veranstaltung/{{row.idveranstaltung}}" class= "col l2 s6 waves-effect waves-light btn">Anzeigen</a>
 			<a href="/changeveranstaltung/{{row.idveranstaltung}}" class= "col l2 s6 waves-effect waves-light btn">Ändern</a>
 			<a href="#modal3" class= "col l2 s6 waves-effect waves-light btn modal-trigger" onclick="addVID(this)">+ Termin</a>
 			<form action="/deleteveranstaltung/{{row.idveranstaltung}}" method="post">
 				<input name="pid" type="hidden" value="{{id}}"/>
-				<input type="submit" value="X" class="submit waves-effect waves-light btn col l1 s6" />
+				<input type="submit" value="Löschen" class="submit waves-effect waves-light btn col l2 s6" />
 			</form>
 		</div>
 		{% if row.termine %}
 		<table class="col l12 s12">
 		<thead>
           <tr>
-              <th class="col l3 s4">ID</th>
               <th class="col l2 s4">Datum</th>
-              <th class="col l1 s2">Startzeit</th>
-			  <th class="col l1 s2">Endzeit</th>
+              <th class="col l2 s4">Startzeit</th>
+			  <th class="col l2 s4">Endzeit</th>
           </tr>
         </thead>
 		<tbody>
 		{% for row2 in row.termine %}
 			<tr>
-				<td class="col l3 s4">{{ "%06d"|format(row2.idtermin) }}</td>
 				{% if row2.datum == "9999-12-31" %}
 				<td class="col l2 s4">-</td>
 				{% else %}
 				<td class="col l2 s4">{{ row2.datum }}</td>
 				{% endif %}
-				<td class="col l1 s2">{{ row2.startzeit }}</td> 
-				<td class="col l1 s2">{{ row2.endzeit }}</td>
-				<td class="col l2 s5 buttontable"><a href="/termin/{{row2.idtermin}}" class= "col s12 waves-effect waves-light btn">Anzeigen</a></td>
-				<td class="col l2 s5 buttontable"><a href="/changetermin/{{row2.idtermin}}" class= "col s12 waves-effect waves-light btn">Ändern</a></td>
-				<td class="col l1 s2 buttontable">
+				<td class="col l2 s4">{{ row2.startzeit }}</td> 
+				<td class="col l2 s4">{{ row2.endzeit }}</td>
+				<td class="col l2 s4 buttontable"><a href="/termin/{{row2.idtermin}}" class= "col s12 waves-effect waves-light btn">Anzeigen</a></td>
+				<td class="col l2 s4 buttontable"><a href="/changetermin/{{row2.idtermin}}" class= "col s12 waves-effect waves-light btn">Ändern</a></td>
+				<td class="col l2 s4 buttontable">
 					<form class="tdelete" action="/deletetermin/{{row2.idtermin}}" method="post">
 						<input name="pid" type="hidden" value="{{id}}"/>
-						<input type="submit" value="X" class="submit waves-effect waves-light btn col s12" />
+						<input type="submit" value="Löschen" class="submit waves-effect waves-light btn col s12" />
 					</form>
 				</td>
 			</tr>
