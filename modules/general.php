@@ -50,6 +50,43 @@ function (Request $request) use($app)
 });
 
 //======================================================================
+// BUGREPORTING
+//======================================================================
+
+//-----------------------------------------------------
+// Post-Requests
+
+//Versenden eines Bugreports
+$app->post('/bugreport',
+function (Request $request) use($app)
+{
+	$currentURL = $request->request->get('currentURL');
+	$brname = $request->request->get('BRName');
+	$bname = $request->request->get('BName');
+	$brep = $request->request->get('BRep');
+	$to      = 'vitusw@gmx.net,fls@fh-wedel.de';
+	$subject = 'Bug-Report ' . date("D M j G:i:s T Y")  . ' : ' . $bname;
+	$message = '
+			<html>
+				<head>
+					<title>Bug-Report ' . date("D M j G:i:s T Y")  . '</title>
+				</head>
+				<body>
+					<h4>Um ' . date("D M j G:i:s T Y")  . ' schickte ' . $brname . ' folgenden Bug-Report:</h4>
+					<p>' . $bname . ':<p>
+					<p>' . $brep . '</p>
+					<p>Gesendet von der URI: ' . $currentURL . '</p>
+				</body>
+			</html>
+			';
+	$headers[] = 'MIME-Version: 1.0';
+	$headers[] = 'Content-type: text/html; charset=iso-8859-1';
+	$headers[] = 'From: BugTracker@who-is-there-217012.appspotmail.com';
+	mail($to, $subject, $message, implode("\r\n", $headers));
+	return $app->redirect($currentURL);
+});
+
+//======================================================================
 // TERMINSEITE
 //======================================================================
 
@@ -167,41 +204,4 @@ function (Request $request, $id) use($app)
 		setcookie('veranstaltungen', json_encode($data));
 	}
 	return $app->redirect('/' . $vid);
-});
-
-//======================================================================
-// BUGREPORTING
-//======================================================================
-
-//-----------------------------------------------------
-// Post-Requests
-
-//Versenden eines Bugreports
-$app->post('/bugreport',
-function (Request $request) use($app)
-{
-	$currentURL = $request->request->get('currentURL');
-	$brname = $request->request->get('BRName');
-	$bname = $request->request->get('BName');
-	$brep = $request->request->get('BRep');
-	$to      = 'vitusw@gmx.net,fls@fh-wedel.de';
-	$subject = 'Bug-Report ' . date("D M j G:i:s T Y")  . ' : ' . $bname;
-	$message = '
-			<html>
-				<head>
-					<title>Bug-Report ' . date("D M j G:i:s T Y")  . '</title>
-				</head>
-				<body>
-					<h4>Um ' . date("D M j G:i:s T Y")  . ' schickte ' . $brname . ' folgenden Bug-Report:</h4>
-					<p>' . $bname . ':<p>
-					<p>' . $brep . '</p>
-					<p>Gesendet von der URI: ' . $currentURL . '</p>
-				</body>
-			</html>
-			';
-	$headers[] = 'MIME-Version: 1.0';
-	$headers[] = 'Content-type: text/html; charset=iso-8859-1';
-	$headers[] = 'From: BugTracker@anwesenheitstrackermvp.appspotmail.com';
-	mail($to, $subject, $message, implode("\r\n", $headers));
-	return $app->redirect($currentURL);
 });

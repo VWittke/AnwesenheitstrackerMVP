@@ -20,6 +20,6 @@ handlers:
   script: index.php
 
 env_variables:
-  MYSQL_DSN: mysql:unix_socket=/cloudsql/anwesenheitstrackermvp:europe-west4:anwesenheit;dbname=anwesenheit
+  MYSQL_DSN: mysql:unix_socket=/cloudsql/who-is-there-217012:europe-west4:who-is-there-db;dbname=anwesenheit
   MYSQL_USER: test-user
   MYSQL_PASSWORD: test

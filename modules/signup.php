@@ -120,7 +120,7 @@ function (Request $request) use($app)
 				<body>
 					<h4>' . $pname . ' hat Sie eingeladen den Anwesenheitstracker zu testen</h4>
 					<p>Sie können sich Ihren eigenen Account unter folgendem Link erstellen:<p>
-					<a href="https://anwesenheitstrackermvp.appspot.com/register/' . $invitecode . '">https://anwesenheitstrackermvp.appspot.com/register/' . $invitecode . '</a>
+					<a href="https://who-is-there-217012.appspot.com/register/' . $invitecode . '">https://who-is-there-217012.appspot.com/register/' . $invitecode . '</a>
 					<p>' . $pname . ' hat folgende Nachricht für Sie:</p>
 					<p>' . $mess . '</p>
 				</body>
@@ -128,7 +128,7 @@ function (Request $request) use($app)
 			';
 	$headers[] = 'MIME-Version: 1.0';
 	$headers[] = 'Content-type: text/html; charset=iso-8859-1';
-	$headers[] = 'From: InviteService@anwesenheitstrackermvp.appspotmail.com';
+	$headers[] = 'From: InviteService@who-is-there-217012.appspotmail.com';
 	mail($to, $subject, $message, implode("\r\n", $headers));
 	return $app->redirect('/veranstalter');
 });
