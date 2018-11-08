@@ -64,7 +64,7 @@ function (Request $request) use($app)
 	$brname = $request->request->get('BRName');
 	$bname = $request->request->get('BName');
 	$brep = $request->request->get('BRep');
-	$to      = 'vitusw@gmx.net,fls@fh-wedel.de';
+	$to      = 'vitusw@gmx.net,fls@fh-wedel.de,winf101936@fh-wedel.de';
 	$subject = 'Bug-Report ' . date("D M j G:i:s T Y")  . ' : ' . $bname;
 	$message = '
 			<html>

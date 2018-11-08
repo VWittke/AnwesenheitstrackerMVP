@@ -52,8 +52,25 @@ function () use($app)
 	}
 
 	$db = new PDO($dsn, $user, $password);
+	
+	$offset = getTZOffset();
+	$db->exec("SET time_zone='$offset';");
+	
 	return $db;
 };
+
+//Festlegen des Zeitzonen-Offsets pro Session
+function getTZOffset()
+{
+	$now = new DateTime();
+	$minutes = $now->getOffset() / 60;
+	$sign = ($minutes < 0 ? -1 : 1);
+	$minutes = abs($minutes);
+	$hours = $minutes / 60;
+	$minutes -= $hours * 60;
+	$offset = sprintf('%+d:%02d', $hours*$sign, $minutes);
+	return $offset;
+}
 
 //Überprüfen des Logins
 function checkLogin($login, $passwort, $app, $admin)
