@@ -102,6 +102,8 @@ function ($id) use($app)
 	$stmt->execute([':id' => $id, ':maxdatum' => "9999-12-31"]);
 	$tid = $stmt->fetch() [0];
 	if (!$tid) {
+		session_start();
+		$_SESSION["message"] = 2;
 		return $app->redirect('/');
 	}
 	$displaymessage = false;
@@ -116,15 +118,9 @@ function ($id) use($app)
 		$candelete = true;
 	};
 	if (!$candelete) {
-		if (checkVeranstaltung($db, $id)) {
-			if (!checkVeranstaltungValid($db, $id)) {
-				session_start();
-				$_SESSION["message"] = 3;
-				return $app->redirect('/');
-			}
-		} else {
+		if (!checkVeranstaltungValid($db, $id)) {
 			session_start();
-			$_SESSION["message"] = 2;
+			$_SESSION["message"] = 3;
 			return $app->redirect('/');
 		};
 	}
