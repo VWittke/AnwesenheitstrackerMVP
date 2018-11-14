@@ -115,6 +115,19 @@ function ($id) use($app)
 	if (checkSession($app, $dozentid, 'userid')) {
 		$candelete = true;
 	};
+	if (!$candelete) {
+		if (checkVeranstaltung($db, $id)) {
+			if (!checkVeranstaltungValid($db, $id)) {
+				session_start();
+				$_SESSION["message"] = 3;
+				return $app->redirect('/');
+			}
+		} else {
+			session_start();
+			$_SESSION["message"] = 2;
+			return $app->redirect('/');
+		};
+	}
 	$stmt = $db->prepare('SELECT users.name, veranstaltung.vname, termin.datum, termin.startzeit, termin.endzeit, veranstaltung.dozent FROM veranstaltung INNER JOIN users ON veranstaltung.dozent = users.idusers INNER JOIN termin ON veranstaltung.idveranstaltung = termin.veranstaltung WHERE termin.idtermin = :id');
 	$stmt->execute([':id' => $tid]);
 	$info = $stmt->fetch(PDO::FETCH_ASSOC);
